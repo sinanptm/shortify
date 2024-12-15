@@ -6,7 +6,8 @@ const connectDb = async()=>{
     try {
         await connect(MONGO_URI);
     } catch (error) {
-        logger.error(error)
+        logger.error(error);
+        process.exit(1)
     }
 }
 

@@ -3,7 +3,8 @@ import express from 'express';
 import connectDb from './config/connectDb';
 import authRoutes from './presentation/routers/authRoutes';
 import urlRoutes from './presentation/routers/urlRoutes';
-import { CLIENT_URL } from './config/env';
+import { CLIENT_URL, PORT } from './config/env';
+import connectRedis from './config/connectRedis';
 
 const app = express();
 
@@ -21,7 +22,8 @@ app.use(
 app.use("/api", authRoutes);
 app.use("/api", urlRoutes);
 
-app.listen(8000, () => {
+app.listen(PORT, () => {
     connectDb();
+    connectRedis();
     console.log("Server start running");
 });
