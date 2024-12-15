@@ -1,4 +1,5 @@
 import express from 'express';
+import connectDb from './config/connectDb';
 
 const app = express();
 
@@ -7,5 +8,6 @@ app.get('/', (req, res) => {
 });
 
 app.listen(8000, () => {
+    connectDb();
     console.log("Server start running");
 });
