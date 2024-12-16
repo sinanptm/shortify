@@ -28,7 +28,7 @@ export default class TokenService implements ITokenService {
     }
 
     createAccessToken(email: string, id: string): string {
-        const expTime = NODE_ENV === "production" ? "15m" : "2d";
+        const expTime = NODE_ENV === "production" ? "15m" : "7d";
         return this.signToken({ email, id }, ACCESS_TOKEN_SECRET, expTime);
     }
 

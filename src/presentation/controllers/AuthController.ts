@@ -1,3 +1,4 @@
+import { AuthorizationError } from "@/domain/entities/CustomErrors";
 import { StatusCode } from "@/types";
 import AuthUseCase from "@/use_cases/AuthUseCase";
 import { NextFunction, Request, Response } from "express";
@@ -24,5 +25,34 @@ export default class AuthController {
         } catch (error) {
             next(error);
         }
+    }
+
+    async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { auth_token } = req.cookies;
+            if (!auth_token) throw new AuthorizationError();
+
+            const { accessToken } = await this.authUseCase.refreshAccessToken(auth_token);
+            res.status(StatusCode.Success).json({ accessToken });
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async logout(req: Request, res: Response) {
+        const { patientToken } = req.cookies;
+        if (!patientToken) {
+            res.sendStatus(StatusCode.NoContent);
+            return
+        }
+
+        res.clearCookie('auth_token', {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: true,
+        });
+
+        res.status(StatusCode.Success).json({ message: "Cookie cleared" });
     }
 }

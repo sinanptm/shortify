@@ -1,6 +1,7 @@
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
 import ITokenService from "@/domain/interface/services/ITokenService";
 import IValidatorService from "@/domain/interface/services/IValidatorService";
+import { AuthenticationError } from "@/domain/entities/CustomErrors";
 
 export default class AuthUseCase {
     constructor(
@@ -27,4 +28,19 @@ export default class AuthUseCase {
 
         return { accessToken, refreshToken };
     }
+
+    async refreshAccessToken(token: string): Promise<{ accessToken: string }> {
+        const { id } = this.tokenService.verifyRefreshToken(token);
+  
+        const user = await this.useRepository.findById(id);
+
+        if(!user){
+            throw new  AuthenticationError();
+        }
+       
+        const accessToken = this.tokenService.createAccessToken(user.email!,user._id!);
+  
+        return { accessToken };
+     }
+  
 }

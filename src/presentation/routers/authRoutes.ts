@@ -15,5 +15,7 @@ const authUseCase = new AuthUseCase(useRepository, validatorService, tokenServic
 const authController = new AuthController(authUseCase);
 
 route.post("/auth", authController.exec.bind(authController));
+route.put("/refresh-token",authController.refreshAccessToken.bind(authController));
+route.delete("/logout",authController.logout.bind(authController))
 
 export default route;
