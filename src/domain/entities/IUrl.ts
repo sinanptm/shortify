@@ -7,7 +7,7 @@ export default interface IUrl {
     readonly shortUrl?: string;
     readonly customAlias?: string;
     readonly topic?: string;
+    readonly clicks?: number;
     readonly createdAt?: Date | string;
-    readonly updatedAt?: Date | string;
-    readonly accessCount?: number;
+    readonly lastAccessed: Date | string;
 }
