@@ -30,10 +30,3 @@ jobs:
       - name: Run Tests
         run: npm run test
 
-      - name: Upload Jest Test Results (if failed)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jest-test-results
-          path: ./test-results
-
