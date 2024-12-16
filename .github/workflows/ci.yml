@@ -19,14 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22' 
-          cache: 'npm'       
+          cache: 'yarn' 
 
       - name: Install Dependencies
-        run: npm install
+        run: yarn install  
 
       - name: Build Project
-        run: npm run build
+        run: yarn build  
 
       - name: Run Tests
-        run: npm run test
-
+        run: yarn test  
