@@ -1,9 +1,12 @@
 import CreateUrlUseCase from "@/use_cases/CreateUrlUseCase";
-import { mockNanoIdService, mockValidatorService } from "./mock/services.mock";
-import { mockUrlRepository, mockUserRepository } from "./mock/repositories.mock";
-import { mockUrl, mockUser } from "./mock/entities.mock";
+import {  mockValidatorService } from "./__mocks__/services/validatorService.mock";
+import { mockUrlRepository } from "./__mocks__/repositories/urlRepository.mock";
 import { CLIENT_URL } from "@/config/env";
 import { ConflictError, AuthenticationError } from "@/domain/entities/CustomErrors";
+import { mockUserRepository } from "./__mocks__/repositories/userRepository.mock";
+import { mockNanoIdService } from "./__mocks__/services/nanoIdService.mock";
+import { mockUrl } from "./__mocks__/entities/url.mock";
+import { mockUser } from "./__mocks__/entities/user.mock";
 
 const createUrlUseCase = new CreateUrlUseCase(
     mockValidatorService,

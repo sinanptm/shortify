@@ -1,7 +1,8 @@
-import AuthUseCase from "../src/use_cases/AuthUseCase";
-import { mockUserRepository } from "./mock/repositories.mock";
-import { mockValidatorService, mockTokenService } from './mock/services.mock';
-import { mockUser } from './mock/entities.mock';
+import AuthUseCase from "@/use_cases/AuthUseCase";
+import { mockUser } from "./__mocks__/entities/user.mock";
+import { mockUserRepository } from "./__mocks__/repositories/userRepository.mock";
+import { mockTokenService } from "./__mocks__/services/tokenService.mock";
+import { mockValidatorService } from './__mocks__/services/validatorService.mock';
 
 const authUseCase = new AuthUseCase(
     mockUserRepository,
