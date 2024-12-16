@@ -1,6 +1,6 @@
 import IUrl from "@/domain/entities/IUrl";
 
-export const mockUrl: IUrl = {
+const mockUrl: IUrl = {
     "_id":  "675ff58eafcd464a83bd7198",
     "longUrl": "https://www.igotskills.in/tasks/31",
     "shortUrl": "http://localhost:3000/l/my_link_alias",
@@ -12,3 +12,5 @@ export const mockUrl: IUrl = {
     "updatedAt":  "2024-12-16T09:40:30.405Z",
     "customAlias":"my_link_alias"
 };
+
+export default mockUrl

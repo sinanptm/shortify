@@ -1,12 +1,12 @@
 import CreateUrlUseCase from "@/use_cases/CreateUrlUseCase";
-import {  mockValidatorService } from "./__mocks__/services/validatorService.mock";
-import { mockUrlRepository } from "./__mocks__/repositories/urlRepository.mock";
-import { CLIENT_URL } from "@/config/env";
 import { ConflictError, AuthenticationError } from "@/domain/entities/CustomErrors";
-import { mockUserRepository } from "./__mocks__/repositories/userRepository.mock";
-import { mockNanoIdService } from "./__mocks__/services/nanoIdService.mock";
-import { mockUrl } from "./__mocks__/entities/url.mock";
-import { mockUser } from "./__mocks__/entities/user.mock";
+import mockValidatorService from "./__mocks__/services/validatorService.mock";
+import mockUrlRepository from "./__mocks__/repositories/urlRepository.mock";
+import { CLIENT_URL } from "./__mocks__/config/env.mock";
+import mockUserRepository from "./__mocks__/repositories/userRepository.mock";
+import mockNanoIdService from "./__mocks__/services/nanoIdService.mock";
+import mockUrl from "./__mocks__/entities/url.mock";
+import mockUser from "./__mocks__/entities/user.mock";
 
 const createUrlUseCase = new CreateUrlUseCase(
     mockValidatorService,
@@ -105,12 +105,12 @@ describe("CreateUrlUseCase", () => {
         mockValidatorService.validateString.mockReturnValue(true);
         mockUserRepository.findById.mockResolvedValue(mockUser);
         mockNanoIdService.generateId.mockReturnValue(nanoId);
-        mockUrlRepository.create.mockResolvedValue({ 
-            ...mockUrl, 
-            shortUrl: `${CLIENT_URL}/l/${nanoId}` 
+        mockUrlRepository.create.mockResolvedValue({
+            ...mockUrl,
+            shortUrl: `${CLIENT_URL}/l/${nanoId}`
         });
         await createUrlUseCase.exec(userId!, longUrl!, topic!);
-    
+
         expect(mockNanoIdService.generateId).toHaveBeenCalledWith(8);
         expect(mockValidatorService.validateRequiredFields).toHaveBeenCalledWith({
             userId,

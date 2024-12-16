@@ -1,6 +1,6 @@
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 
-export const mockUrlRepository: jest.Mocked<IUrlRepository> = {
+const mockUrlRepository: jest.Mocked<IUrlRepository> = {
     create: jest.fn(),
     update: jest.fn(),
     findById: jest.fn(),
@@ -13,3 +13,4 @@ export const mockUrlRepository: jest.Mocked<IUrlRepository> = {
     findTopUrls:jest.fn(),
     incrementClicks:jest.fn()
 }
+export default mockUrlRepository
