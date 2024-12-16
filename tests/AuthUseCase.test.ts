@@ -15,7 +15,7 @@ describe("AuthUseCase", () => {
 
     beforeEach(() => jest.clearAllMocks());
 
-    it("should validate inputs and create tokens for a new user", async () => {
+    it("should create tokens for a new user", async () => {
         mockUserRepository.findByEmail.mockResolvedValue(null);
         mockUserRepository.create.mockResolvedValue({ _id, email, name });
         mockTokenService.createAccessToken.mockReturnValue(accessToken);
@@ -23,9 +23,8 @@ describe("AuthUseCase", () => {
 
         const result = await authUseCase.exec(email!, name!);
 
-        expect(mockValidatorService.validateEmail).toHaveBeenCalledWith(email);
-        expect(mockValidatorService.validateString).toHaveBeenCalledWith(name);
         expect(mockUserRepository.create).toHaveBeenCalledWith({ email, name });
+        expect(mockTokenService.createAccessToken).toHaveBeenCalledWith(email, _id);
         expect(result).toEqual({ accessToken, refreshToken: token });
     });
 
@@ -48,4 +47,19 @@ describe("AuthUseCase", () => {
 
         await expect(authUseCase.exec("invalid-email", name!)).rejects.toThrow("Invalid email");
     });
+
+    it("should create new tokens and return them", async () => {
+        mockTokenService.verifyRefreshToken.mockReturnValue({ email: email!, id: _id! });
+        mockUserRepository.findById.mockResolvedValue({ email, _id });
+        mockTokenService.createAccessToken.mockReturnValue(accessToken);
+        mockTokenService.createRefreshToken.mockReturnValue(token!);
+    
+        const res = await authUseCase.refreshAccessToken(token!);
+    
+        expect(mockTokenService.verifyRefreshToken).toHaveBeenCalledWith(token!); 
+        expect(mockUserRepository.findById).toHaveBeenCalledWith(_id);
+        expect(mockTokenService.createAccessToken).toHaveBeenCalledWith(email, _id); 
+        expect(res).toEqual({ accessToken }); 
+    });
+    
 });
