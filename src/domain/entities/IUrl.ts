@@ -8,6 +8,7 @@ export default interface IUrl {
     readonly customAlias?: string;
     readonly topic?: string;
     readonly clicks?: number;
-    readonly createdAt?: Date | string;
     readonly lastAccessed?: Date | string;
+    readonly createdAt?: Date | string;
+    readonly updatedAt?: Date | string;
 }

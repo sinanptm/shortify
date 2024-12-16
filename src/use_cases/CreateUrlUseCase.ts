@@ -16,11 +16,14 @@ export default class CreateUrlUseCase {
 
     async exec(userId: string, longUrl: string, topic: string, customAlias?: string) {
         this.validateInputs(userId, longUrl, topic);
-
         await this.ensureUserExists(userId);
 
         const shortUrl = await this.generateUniqueShortUrl(customAlias);
         const date = new Date();
+        let alias = undefined;
+        if (customAlias && this.validatorService.validateString(customAlias, "customAlias")) {
+            alias = this.cleanAlias(customAlias);
+        }
         const url = await this.urlRepository.create({
             userId,
             longUrl,
@@ -29,6 +32,7 @@ export default class CreateUrlUseCase {
             clicks: 0,
             lastAccessed: date,
             createdAt: date,
+            customAlias: alias
         });
 
         return url;
@@ -36,7 +40,7 @@ export default class CreateUrlUseCase {
 
     private async generateUniqueShortUrl(customAlias?: string): Promise<string> {
         if (customAlias) {
-            this.validatorService.validateString(customAlias,"customAlias");
+            this.validatorService.validateString(customAlias, "customAlias");
 
             customAlias = this.cleanAlias(customAlias);
 
@@ -62,13 +66,13 @@ export default class CreateUrlUseCase {
     }
 
     private cleanAlias(alias: string): string {
-        return alias.trim().replace(/\s+/g, '_');  
+        return alias.trim().replace(/\s+/g, '_');
     }
 
     private validateInputs(userId: string, longUrl: string, topic: string) {
         this.validatorService.validateRequiredFields({ userId, topic, longUrl });
         this.validatorService.validateUrl(longUrl);
-        this.validatorService.validateString(topic,'topic')
+        this.validatorService.validateString(topic, 'topic');
     }
 
     private async ensureUserExists(userId: string) {
