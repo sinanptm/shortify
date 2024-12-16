@@ -16,6 +16,7 @@ export enum StatusCode {
     NotImplemented = 501,
     BadGateway = 502,
     ServiceUnavailable = 503,
+    RateLimitExceeded = 429
 }
 
 export interface CustomRequest extends Request {
