@@ -23,7 +23,6 @@ const createUrlUseCase = new CreateUrlUseCase(
     validatorService,
     userRepository,
     urlRepository,
-    clickAnalyticsRepository,
     nanoIdService
 );
 

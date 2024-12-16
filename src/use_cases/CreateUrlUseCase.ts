@@ -1,6 +1,5 @@
 import { CLIENT_URL } from "@/config/env";
 import { AuthenticationError, ConflictError } from "@/domain/entities/CustomErrors";
-import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
 import INanoIdService from "@/domain/interface/services/INanoIdService";
@@ -11,7 +10,6 @@ export default class CreateUrlUseCase {
         private validatorService: IValidatorService,
         private userRepository: IUserRepository,
         private urlRepository: IUrlRepository,
-        private clickAnalyticsRepository: IClickAnalyticsRepository,
         private nanoIdService: INanoIdService
     ) { }
 
