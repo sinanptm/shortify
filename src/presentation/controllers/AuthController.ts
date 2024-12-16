@@ -1,5 +1,6 @@
 import { StatusCode } from "@/types";
 import AuthUseCase from "@/use_cases/AuthUseCase";
+import logger from "@/utils/logger";
 import { NextFunction, Request, Response } from "express";
 
 export default class AuthController {

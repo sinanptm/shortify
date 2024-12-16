@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export enum StatusCode {
     Success = 200,
     Created = 201,
@@ -16,3 +18,9 @@ export enum StatusCode {
     ServiceUnavailable = 503,
 }
 
+export interface CustomRequest extends Request {
+    user?: {
+        id: string;
+        email: string;
+    };
+}
