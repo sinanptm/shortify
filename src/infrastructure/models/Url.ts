@@ -4,7 +4,7 @@ import { Schema, model } from "mongoose";
 const urlSchema = new Schema<IUrl>({
     longUrl: { type: String, required: true },
     shortUrl: { type: String, required: true, unique: true },
-    customAlias: { type: String, sparse: true, unique: true },
+    customAlias: { type: String, required: true, unique: true },
     topic: { type: String, index: true },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     clicks: { type: Number, default: 0 },

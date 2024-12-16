@@ -1,6 +1,6 @@
 import { AuthorizationError } from "@/domain/entities/CustomErrors";
 import { StatusCode } from "@/types";
-import AuthUseCase from "@/use_cases/AuthUseCase";
+import AuthUseCase from "@/use_cases/auth/AuthUseCase";
 import { NextFunction, Request, Response } from "express";
 
 export default class AuthController {

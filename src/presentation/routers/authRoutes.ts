@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import AuthController from '../controllers/AuthController';
-import AuthUseCase from '@/use_cases/AuthUseCase';
+import AuthUseCase from '@/use_cases/auth/AuthUseCase';
 import UserRepository from '@/infrastructure/repositories/UserRepository';
 import ValidatorService from '@/infrastructure/service/ValidatorService';
 import TokenService from '@/infrastructure/service/TokenService';

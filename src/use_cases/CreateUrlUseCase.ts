@@ -20,10 +20,6 @@ export default class CreateUrlUseCase {
 
         const shortUrl = await this.generateUniqueShortUrl(customAlias);
         const date = new Date();
-        let alias = undefined;
-        if (customAlias && this.validatorService.validateString(customAlias, "customAlias")) {
-            alias = this.cleanAlias(customAlias);
-        }
         const url = await this.urlRepository.create({
             userId,
             longUrl,
@@ -32,7 +28,7 @@ export default class CreateUrlUseCase {
             clicks: 0,
             lastAccessed: date,
             createdAt: date,
-            customAlias: alias
+            customAlias: shortUrl
         });
 
         return url;

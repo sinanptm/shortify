@@ -1,4 +1,4 @@
-import AuthUseCase from "@/use_cases/AuthUseCase";
+import AuthUseCase from "@/use_cases/auth/AuthUseCase";
 import { mockUser } from "./__mocks__/entities/user.mock";
 import { mockUserRepository } from "./__mocks__/repositories/userRepository.mock";
 import { mockTokenService } from "./__mocks__/services/tokenService.mock";

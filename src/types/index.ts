@@ -1,3 +1,5 @@
+import IUrl from "@/domain/entities/IUrl";
+import IUser from "@/domain/entities/IUser";
 import { Request } from "express";
 
 export enum StatusCode {
@@ -5,6 +7,7 @@ export enum StatusCode {
     Created = 201,
     Accepted = 202,
     NoContent = 204,
+    Redirect = 301,
     BadRequest = 400,
     Unauthorized = 401,
     PaymentError = 402,

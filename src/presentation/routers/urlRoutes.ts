@@ -9,12 +9,14 @@ import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyti
 import UrlController from '../controllers/UrlController';
 import NanoIdService from '@/infrastructure/service/NanoIdService';
 import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware';
-
+import RedirectUseCase from '@/use_cases/RedirectUseCase';
+import GeolocationService from '@/infrastructure/service/GeoLocationService';
 
 const route = Router();
 const tokenService = new TokenService();
 const validatorService = new ValidatorService();
 const nanoIdService = new NanoIdService();
+const geoLocationService = new GeolocationService();
 
 const urlRepository = new UrlRepository();
 const userRepository = new UserRepository();
@@ -26,14 +28,20 @@ const createUrlUseCase = new CreateUrlUseCase(
     urlRepository,
     nanoIdService
 );
+const redirectUseCase = new RedirectUseCase(
+    urlRepository,
+    clickAnalyticsRepository,
+    geoLocationService
+);
 
 const limiterMiddleware = new RateLimiterMiddleware(111);
 const limiter = limiterMiddleware.exec.bind(limiterMiddleware);
 const authMiddleware = new AuthMiddleware(tokenService);
-const urlController = new UrlController(createUrlUseCase);
+const urlController = new UrlController(createUrlUseCase, redirectUseCase);
 
 route.use(authMiddleware.exec);
 
-route.post("/shorten", limiter, urlController.createUrl.bind(urlController));
+route.post("/shorten", limiter, urlController.createUrl.bind(urlController))
+route.get("/shorten/:alias",urlController.handleRedirect.bind(urlController));
 
 export default route;
