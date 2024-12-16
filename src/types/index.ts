@@ -14,5 +14,5 @@ export enum StatusCode {
     NotImplemented = 501,
     BadGateway = 502,
     ServiceUnavailable = 503,
- }
- 
+}
+

@@ -1,21 +1,23 @@
 import IUser from "@/domain/entities/IUser";
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
+import User from "../models/User";
 
-export default class UserRepository implements IUserRepository{
-    findByEmail(email: string): Promise<IUser> {
-        throw new Error("Method not implemented.");
+export default class UserRepository implements IUserRepository {
+    userModel = User;
+    async findByEmail(email: string): Promise<IUser | null> {
+        return await this.userModel.findOne({ email }).lean();
     }
-    create(entity: IUser): Promise<IUser> {
-        throw new Error("Method not implemented.");
+    async create(entity: IUser): Promise<IUser> {
+        return await this.userModel.create(entity);
     }
-    findById(id: string): Promise<IUser | null> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<IUser | null> {
+        return await this.userModel.findById(id);
     }
-    update(id: string, entity: IUser): Promise<IUser> {
-        throw new Error("Method not implemented.");
+    async update(id: string, entity: IUser): Promise<IUser | null> {
+        return await this.userModel.findByIdAndDelete(id, entity);
     }
-    delete(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<void> {
+        await this.userModel.findByIdAndDelete(id);
     }
-    
+
 }

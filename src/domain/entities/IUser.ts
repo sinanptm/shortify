@@ -1,5 +1,6 @@
 export default interface IUser {
-    _id: string;
-    email: string;
-    name: string;
+    readonly _id?: string;
+    readonly email?: string;
+    readonly name?: string;
+    readonly token?:string;
 }

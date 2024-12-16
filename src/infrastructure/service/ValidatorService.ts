@@ -1,19 +1,30 @@
 import { ValidationError } from "@/domain/entities/CustomErrors";
 import IValidatorService from "@/domain/interface/services/IValidatorService";
-import { isEmail, isURL } from 'validator';
+import * as yup from 'yup';
 
 export default class ValidatorService implements IValidatorService {
-    validateEmail(email: string): boolean {
-        if (!isEmail(email)) {
-            throw new ValidationError('Invalid email format');
+    private emailSchema = yup.string().email('Invalid email format').required('Email is required');
+    private urlSchema = yup.string().url('Invalid URL format').required('URL is required');
+    private stringSchema = yup.string().trim().min(1, 'String cannot be empty').required('String is required');
+
+    private catcher(func: () => void): boolean {
+        try {
+            func();
+            return true;
+        } catch (error: any) {
+            throw new ValidationError(error.message);
         }
-        return true;
+    }
+
+    validateEmail(email: string): boolean {
+        return this.catcher(() => this.emailSchema.validateSync(email));
     }
 
     validateUrl(url: string): boolean {
-        if (!isURL(url)) {
-            throw new ValidationError('Invalid URL format');
-        }
-        return true;
+        return this.catcher(() => this.urlSchema.validateSync(url));
+    }
+
+    validateString(str: string): boolean {
+        return this.catcher(() => this.stringSchema.validateSync(str));
     }
 }
