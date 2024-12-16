@@ -9,9 +9,4 @@ const authMiddleware = new AuthMiddleware(tokenService);
 
 route.use(authMiddleware.exec.bind(authMiddleware));
 
-route.post("/shorten",(req,res)=>{
-    res.send("success")
-})
-
-
 export default route;
