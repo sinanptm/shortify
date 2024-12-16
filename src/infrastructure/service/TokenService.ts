@@ -1,6 +1,6 @@
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import ITokenService from "@/domain/interface/services/ITokenService";
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "@/config/env";
+import { ACCESS_TOKEN_SECRET, NODE_ENV, REFRESH_TOKEN_SECRET } from "@/config/env";
 import { AuthenticationError, AuthorizationError } from "@/domain/entities/CustomErrors";
 
 export default class TokenService implements ITokenService {
@@ -28,7 +28,8 @@ export default class TokenService implements ITokenService {
     }
 
     createAccessToken(email: string, id: string): string {
-        return this.signToken({ email, id }, ACCESS_TOKEN_SECRET, "15m");
+        const expTime = NODE_ENV === "production" ? "15m" : "2d";
+        return this.signToken({ email, id }, ACCESS_TOKEN_SECRET, expTime);
     }
 
     verifyAccessToken(token: string): { email: string; id: string; } {
