@@ -1,5 +1,6 @@
 import IValidatorService from "../../src/domain/interface/services/IValidatorService";
 import ITokenService from "../../src/domain/interface/services/ITokenService";
+import INanoIdService from "@/domain/interface/services/INanoIdService";
 
 export const mockTokenService: jest.Mocked<ITokenService> = {
     createAccessToken: jest.fn(),
@@ -18,3 +19,6 @@ export const mockValidatorService: jest.Mocked<IValidatorService> = {
     validateRequiredFields:jest.fn()
 };
 
+export const mockNanoIdService:jest.Mocked<INanoIdService> = {
+    generateId:jest.fn()
+}

@@ -7,9 +7,7 @@
     "start": "node -r tsconfig-paths/register dist/index.js",
     "dev": "nodemon",
     "build": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",

@@ -52,12 +52,7 @@ export default class CreateUrlUseCase {
             return customAlias;
         }
 
-        let shortUrl: string;
-        while (true) {
-            shortUrl = this.nanoIdService.generateId(8);
-            const existingShortUrl = await this.urlRepository.findByShortUrl(this.generateUrl(shortUrl));
-            if (!existingShortUrl) break;
-        }
+        const shortUrl = this.nanoIdService.generateId(8);
         return shortUrl.trim();
     }
 

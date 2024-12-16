@@ -1,7 +1,7 @@
 import AuthUseCase from "../src/use_cases/AuthUseCase";
 import { mockUserRepository } from "./mock/repositories.mock";
 import { mockValidatorService, mockTokenService } from './mock/services.mock';
-import { user } from './mock/entities';
+import { mockUser } from './mock/entities.mock';
 
 const authUseCase = new AuthUseCase(
     mockUserRepository,
@@ -11,7 +11,7 @@ const authUseCase = new AuthUseCase(
 
 describe("AuthUseCase", () => {
     const accessToken = "mockAccessToken";
-    const { _id, email, name, token } = user;
+    const { _id, email, name, token } = mockUser;
 
     beforeEach(() => jest.clearAllMocks());
 
