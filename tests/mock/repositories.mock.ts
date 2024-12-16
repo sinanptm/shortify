@@ -1,4 +1,4 @@
-import IUserRepository from "../src/domain/interface/repositories/IUserRepository";
+import IUserRepository from "../../src/domain/interface/repositories/IUserRepository";
 
 export const mockUserRepository: jest.Mocked<IUserRepository> = {
     findByEmail: jest.fn(),

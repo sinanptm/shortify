@@ -1,5 +1,5 @@
-import IValidatorService from "../src/domain/interface/services/IValidatorService";
-import ITokenService from "../src/domain/interface/services/ITokenService";
+import IValidatorService from "../../src/domain/interface/services/IValidatorService";
+import ITokenService from "../../src/domain/interface/services/ITokenService";
 
 export const mockTokenService: jest.Mocked<ITokenService> = {
     createAccessToken: jest.fn(),
