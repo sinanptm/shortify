@@ -14,7 +14,7 @@ export default class UserRepository implements IUserRepository {
         return await this.userModel.findById(id);
     }
     async update(id: string, entity: IUser): Promise<IUser | null> {
-        return await this.userModel.findByIdAndDelete(id, entity);
+        return await this.userModel.findByIdAndUpdate(id, entity);
     }
     async delete(id: string): Promise<void> {
         await this.userModel.findByIdAndDelete(id);

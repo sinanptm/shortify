@@ -9,5 +9,5 @@ export default interface IUrl {
     readonly topic?: string;
     readonly clicks?: number;
     readonly createdAt?: Date | string;
-    readonly lastAccessed: Date | string;
+    readonly lastAccessed?: Date | string;
 }

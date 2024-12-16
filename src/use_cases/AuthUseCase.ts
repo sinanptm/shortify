@@ -11,11 +11,12 @@ export default class AuthUseCase {
     ) { };
 
     async exec(email: string, name: string): Promise<{ accessToken: string; refreshToken: string; }> {
+        this.validatorService.validateRequiredFields({ email, name });
         this.validatorService.validateEmail(email);
-        this.validatorService.validateString(name);
 
         let user = await this.useRepository.findByEmail(email);
         if (!user) {
+            
             user = await this.useRepository.create({ email, name });
         }
 
@@ -29,18 +30,18 @@ export default class AuthUseCase {
         return { accessToken, refreshToken };
     }
 
-    async refreshAccessToken(token: string): Promise<{ accessToken: string }> {
+    async refreshAccessToken(token: string): Promise<{ accessToken: string; }> {
         const { id } = this.tokenService.verifyRefreshToken(token);
-  
+
         const user = await this.useRepository.findById(id);
 
-        if(!user){
-            throw new  AuthenticationError();
+        if (!user) {
+            throw new AuthenticationError();
         }
-       
-        const accessToken = this.tokenService.createAccessToken(user.email!,user._id!);
-  
+
+        const accessToken = this.tokenService.createAccessToken(user.email!, user._id!);
+
         return { accessToken };
-     }
-  
+    }
+
 }

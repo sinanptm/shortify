@@ -7,24 +7,30 @@ import UrlRepository from '@/infrastructure/repositories/UrlRepository';
 import UserRepository from '@/infrastructure/repositories/UserRepository';
 import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyticsRepository';
 import UrlController from '../controllers/UrlController';
+import NanoIdService from '@/infrastructure/service/NanoIdService';
 
 const route = Router();
 
 const tokenService = new TokenService();
-const authMiddleware = new AuthMiddleware(tokenService);
 const validatorService = new ValidatorService();
+const nanoIdService = new NanoIdService();
+
 const urlRepository = new UrlRepository();
 const userRepository = new UserRepository();
 const clickAnalyticsRepository = new ClickAnalyticsRepository();
+
 const createUrlUseCase = new CreateUrlUseCase(
     validatorService,
     userRepository,
     urlRepository,
-    clickAnalyticsRepository
+    clickAnalyticsRepository,
+    nanoIdService
 );
+
+const authMiddleware = new AuthMiddleware(tokenService);
 const urlController = new UrlController(createUrlUseCase);
 
-route.use(authMiddleware.exec.bind(authMiddleware));
+route.use(authMiddleware.exec);
 
 route.post("/shorten", urlController.createUrl.bind(urlController));
 
