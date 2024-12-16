@@ -115,7 +115,6 @@ describe("CreateUrlUseCase", () => {
         expect(mockValidatorService.validateRequiredFields).toHaveBeenCalledWith({
             userId,
             longUrl,
-            topic,
         });
         expect(mockValidatorService.validateUrl).toHaveBeenCalledWith(longUrl);
         expect(mockValidatorService.validateString).toHaveBeenCalledWith(topic, "topic");

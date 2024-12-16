@@ -65,9 +65,11 @@ export default class CreateUrlUseCase {
     }
 
     private validateInputs(userId: string, longUrl: string, topic: string) {
-        this.validatorService.validateRequiredFields({ userId, topic, longUrl });
+        this.validatorService.validateRequiredFields({ userId, longUrl });
         this.validatorService.validateUrl(longUrl);
-        this.validatorService.validateString(topic, 'topic');
+        if (topic) {
+            this.validatorService.validateString(topic, 'topic');
+        }
     }
 
     private async ensureUserExists(userId: string) {
