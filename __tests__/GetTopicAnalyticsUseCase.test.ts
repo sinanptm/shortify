@@ -3,8 +3,6 @@ import { NotFoundError } from "@/domain/entities/CustomErrors";
 import mockUrlRepository from "./__mocks__/repositories/urlRepository.mock";
 import mockClickAnalyticsRepository from "./__mocks__/repositories/clickAnalyticsRepository.mock";
 import mockCacheService from "./__mocks__/services/cacheService.mock";
-import { mockUrls } from "./__mocks__/entities/url.mock";
-import { mockAggregatedClickData, mockClickData } from "./__mocks__/entities/index.mock";
 
 describe("GetTopicAnalyticsUseCase", () => {
     const TOPIC = "exampleTopic";
@@ -22,6 +20,21 @@ describe("GetTopicAnalyticsUseCase", () => {
     });
 
     describe("successful analytics retrieval", () => {
+        const mockUrls = [
+            { _id: "url1", totalClicks: 100, uniqueClicks: 80, shortUrl: "shortUrl1" },
+            { _id: "url2", totalClicks: 150, uniqueClicks: 120, shortUrl: "shortUrl2" }
+        ];
+    
+        const mockClickData = [
+            { timestamp: new Date().toISOString(), urlId: "url1" },
+            { timestamp: new Date().toISOString(), urlId: "url1" },
+            { timestamp: new Date().toISOString(), urlId: "url2" },
+            { timestamp: new Date().toISOString(), urlId: "url2" }
+        ];
+    
+        const mockAggregatedClickData = [
+            { date: new Date().toISOString().split("T")[0], count: 4 }
+        ];
     
         beforeEach(() => {
             mockCacheService.getCachedTopicAnalytics.mockResolvedValue(null);
