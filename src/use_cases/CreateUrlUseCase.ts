@@ -2,6 +2,7 @@ import { CLIENT_URL } from "@/config/env";
 import { AuthenticationError, ConflictError } from "@/domain/entities/CustomErrors";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
+import ICacheService from "@/domain/interface/services/ICacheService";
 import INanoIdService from "@/domain/interface/services/INanoIdService";
 import IValidatorService from "@/domain/interface/services/IValidatorService";
 
@@ -10,7 +11,8 @@ export default class CreateUrlUseCase {
         private validatorService: IValidatorService,
         private userRepository: IUserRepository,
         private urlRepository: IUrlRepository,
-        private nanoIdService: INanoIdService
+        private nanoIdService: INanoIdService,
+        private cacheService: ICacheService
     ) { }
 
 
@@ -31,6 +33,8 @@ export default class CreateUrlUseCase {
             customAlias: shortUrl
         });
 
+        await this.cacheService.cacheUrl(url);
+        
         return url;
     }
 

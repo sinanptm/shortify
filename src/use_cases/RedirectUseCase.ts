@@ -1,16 +1,18 @@
 import { Request } from 'express';
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
-import IGeolocationService from "@/domain/interface/services/IGeolocationService";
+import IGeolocationService, { GeoLocationResponse } from "@/domain/interface/services/IGeolocationService";
 import { NotFoundError } from "@/domain/entities/CustomErrors";
 import IUrl from '@/domain/entities/IUrl';
 import IClickAnalytics from '@/domain/entities/IClickAnalytics';
+import ICacheService from '@/domain/interface/services/ICacheService';
 
 export default class RedirectUseCase {
     constructor(
         private readonly urlRepository: IUrlRepository,
         private readonly clickAnalyticsRepository: IClickAnalyticsRepository,
-        private readonly geolocationService: IGeolocationService
+        private readonly geolocationService: IGeolocationService,
+        private readonly cacheService: ICacheService
     ) { }
 
     async exec(alias: string, request: Request): Promise<string> {
@@ -29,7 +31,11 @@ export default class RedirectUseCase {
 
     private async findUrlByAlias(alias: string): Promise<IUrl> {
         const fullUrl = `${process.env.CLIENT_URL}/l/${alias}`;
-        const url = await this.urlRepository.findByShortUrl(fullUrl);
+        let url = await this.cacheService.getCachedUrl(fullUrl);
+
+        if (url) return url;
+
+        url = await this.urlRepository.findByShortUrl(fullUrl);
 
         if (!url) {
             throw new NotFoundError('URL not found');
@@ -41,7 +47,7 @@ export default class RedirectUseCase {
     private async prepareAnalyticsData(url: IUrl, request: Request): Promise<IClickAnalytics> {
         const ipAddress = this.extractIpAddress(request);
         const userAgent = request.get('User-Agent') || 'Unknown';
-        const geoLocation = await this.geolocationService.locate(ipAddress);
+        const geoLocation =await this.getGeoLocation(ipAddress);
 
         return {
             urlId: url._id,
@@ -54,6 +60,16 @@ export default class RedirectUseCase {
             country: geoLocation?.country || 'Unknown',
             timestamp: new Date()
         };
+    }
+
+    private async getGeoLocation(ipAddress: string): Promise<GeoLocationResponse | null> {
+        let geoLocation = await this.cacheService.getCachedGeoLocation(ipAddress);
+        
+        if (geoLocation) return geoLocation;
+
+        await this.geolocationService.locate(ipAddress);
+        
+        return geoLocation;
     }
 
     private extractIpAddress(request: Request): string {

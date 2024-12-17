@@ -5,7 +5,6 @@ import authRoutes from './presentation/routers/authRoutes';
 import urlRoutes from './presentation/routers/urlRoutes';
 import cookieParser from 'cookie-parser';
 import { CLIENT_URL, PORT } from './config/env';
-import connectRedis from './config/connectRedis';
 import ErrorHandler from './presentation/middlewares/ErrorHandler';
 
 const app = express();
@@ -28,6 +27,5 @@ app.use(new ErrorHandler().exec);
 
 app.listen(PORT, () => {
     connectDb();
-    connectRedis();
     console.log("Server start running");
 });

@@ -13,8 +13,6 @@ export default class GeolocationService implements IGeolocationService {
         try {
             const response = await axios.get(`${this.apiUrl}${ipAddress}`);
             const { country, regionName, city } = response.data;
-            console.log(response.data);
-
             return {
                 ip: ipAddress,
                 country: country || '',
