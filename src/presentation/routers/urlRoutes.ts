@@ -13,7 +13,7 @@ import UserRepository from '@/infrastructure/repositories/UserRepository';
 import ValidatorService from '@/infrastructure/service/ValidatorService';
 import GeolocationService from '@/infrastructure/service/GeoLocationService';
 import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyticsRepository';
-import GetTopicAnalyticsUseCase from '@/use_cases/GetTopicAnalytics';
+import GetTopicAnalyticsUseCase from '@/use_cases/GetTopicAnalyticsUseCase';
 
 const route = Router();
 const tokenService = new TokenService();

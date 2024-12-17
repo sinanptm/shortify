@@ -11,6 +11,7 @@ const mockClickAnalyticsRepository: jest.Mocked<IClickAnalyticsRepository> = {
     getUniqueVisitors: jest.fn().mockResolvedValue(0),
     getDeviceAnalytics: jest.fn().mockResolvedValue([]),
     getOsAnalytics: jest.fn().mockResolvedValue([]),
+    findByUrlIds:jest.fn().mockResolvedValue([])
 };
 
 export default mockClickAnalyticsRepository;

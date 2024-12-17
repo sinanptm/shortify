@@ -13,4 +13,9 @@ const mockUrl: IUrl = {
     "customAlias":"my_link_alias"
 };
 
+export const mockUrls = [
+    { _id: "url1", totalClicks: 100, uniqueClicks: 80, shortUrl: "shortUrl1" },
+    { _id: "url2", totalClicks: 150, uniqueClicks: 120, shortUrl: "shortUrl2" }
+];
+
 export default mockUrl

@@ -1,6 +1,6 @@
 import { CustomRequest, StatusCode } from "@/types";
 import CreateUrlUseCase from "@/use_cases/CreateUrlUseCase";
-import GetTopicAnalytics from "@/use_cases/GetTopicAnalytics";
+import GetTopicAnalytics from "@/use_cases/GetTopicAnalyticsUseCase";
 import GetUrlAnalyticsUseCase from "@/use_cases/GetUrlAnalyticsUseCase";
 import RedirectUseCase from "@/use_cases/RedirectUseCase";
 import { NextFunction, Response } from "express";
