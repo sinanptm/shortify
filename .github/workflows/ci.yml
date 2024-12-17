@@ -28,7 +28,7 @@ jobs:
         run: yarn build  
 
       - name: Clean build folder
-  run: yarn clean
+        run: yarn clean
 
       - name: Run Tests
         run: yarn test  
