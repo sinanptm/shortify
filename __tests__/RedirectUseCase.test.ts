@@ -13,18 +13,15 @@ jest.mock("./__mocks__/services/geolocationService.mock");
 jest.mock("./__mocks__/services/cacheService.mock.ts");
 
 describe("RedirectUseCase", () => {
-    const ALIAS = "exampleAlias";
     const IP_ADDRESS = "123.123.123.123";
     const DESKTOP_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
-    const MOBILE_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)";
-    const FULL_URL = `${process.env.CLIENT_URL}/l/${ALIAS}`;
 
     let redirectUseCase: RedirectUseCase;
     let mockRequest: any;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        
+
         mockRequest = {
             ip: IP_ADDRESS,
             get: jest.fn((header: string) => {
@@ -45,17 +42,15 @@ describe("RedirectUseCase", () => {
 
     describe("RedirectUseCase", () => {
         const ALIAS = "exampleAlias";
-        const IP_ADDRESS = "123.123.123.123";
-        const DESKTOP_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
         const MOBILE_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)";
         const FULL_URL = `${process.env.CLIENT_URL}/l/${ALIAS}`;
-    
+
         let redirectUseCase: RedirectUseCase;
         let mockRequest: any;
-    
+
         beforeEach(() => {
             jest.clearAllMocks();
-    
+
             mockRequest = {
                 ip: IP_ADDRESS,
                 get: jest.fn((header: string) => {
@@ -65,10 +60,10 @@ describe("RedirectUseCase", () => {
                     return null;
                 })
             };
-    
+
             mockCacheService.getCachedUrl.mockResolvedValue(null);
-            mockCacheService.getCachedGeoLocation.mockResolvedValue(mockGeoLocation); 
-    
+            mockCacheService.getCachedGeoLocation.mockResolvedValue(mockGeoLocation);
+
             redirectUseCase = new RedirectUseCase(
                 mockUrlRepository,
                 mockClickAnalyticsRepository,
@@ -76,16 +71,16 @@ describe("RedirectUseCase", () => {
                 mockCacheService
             );
         });
-    
+
         describe("successful redirect", () => {
             beforeEach(() => {
                 mockUrlRepository.findByShortUrl.mockResolvedValue(mockUrl);
                 mockGeolocationService.locate.mockResolvedValue(mockGeoLocation);
                 mockClickAnalyticsRepository.create.mockResolvedValue({});
-                mockUrlRepository.incrementClicks.mockResolvedValue();
+                mockUrlRepository.incrementClicks.mockResolvedValue({ ...mockUrl, clicks: mockUrl.clicks! + 1 });
                 mockUrlRepository.update.mockResolvedValue(mockUrl);
             });
-    
+
             it("should return the long URL and track analytics", async () => {
                 const expectedAnalytics = {
                     urlId: mockUrl._id,
@@ -98,24 +93,19 @@ describe("RedirectUseCase", () => {
                     country: mockGeoLocation.country,
                     timestamp: expect.any(Date)
                 };
-    
+
                 const result = await redirectUseCase.exec(ALIAS, mockRequest);
-    
+
                 expect(result).toBe(mockUrl.longUrl);
                 expect(mockUrlRepository.findByShortUrl).toHaveBeenCalledWith(FULL_URL);
                 expect(mockClickAnalyticsRepository.create).toHaveBeenCalledWith(
                     expect.objectContaining(expectedAnalytics)
                 );
-                expect(mockUrlRepository.update).toHaveBeenCalledWith(
-                    mockUrl._id,
-                    expect.objectContaining({
-                        ...mockUrl,
-                        clicks: mockUrl.clicks! + 1
-                    })
-                );
+                expect(mockUrlRepository.incrementClicks).toHaveBeenCalledWith(mockUrl._id);
+                expect(mockCacheService.invalidateUrlCache).toHaveBeenCalledWith(mockUrl.shortUrl);
+                expect(mockCacheService.cacheUrl).toHaveBeenCalledWith({ ...mockUrl, clicks: mockUrl.clicks! + 1 });
                 expect(mockCacheService.getCachedUrl).toHaveBeenCalledWith(FULL_URL);
             });
-    
             it("should detect mobile devices correctly", async () => {
                 mockRequest.get.mockImplementation((header: string) => {
                     if (header === 'User-Agent') {
@@ -123,9 +113,9 @@ describe("RedirectUseCase", () => {
                     }
                     return null;
                 });
-    
+
                 await redirectUseCase.exec(ALIAS, mockRequest);
-    
+
                 expect(mockClickAnalyticsRepository.create).toHaveBeenCalledWith(
                     expect.objectContaining({
                         deviceType: "Mobile",
@@ -135,18 +125,18 @@ describe("RedirectUseCase", () => {
                 );
             });
         });
-    
+
         describe("error handling", () => {
             it("should throw NotFoundError for non-existent URLs", async () => {
                 mockUrlRepository.findByShortUrl.mockResolvedValue(null);
-    
+
                 await expect(redirectUseCase.exec(ALIAS, mockRequest))
                     .rejects.toThrow(new NotFoundError("URL not found"));
-    
+
                 expect(mockClickAnalyticsRepository.create).not.toHaveBeenCalled();
                 expect(mockUrlRepository.update).not.toHaveBeenCalled();
-                expect(mockCacheService.getCachedUrl).toHaveBeenCalledWith(FULL_URL); 
+                expect(mockCacheService.getCachedUrl).toHaveBeenCalledWith(FULL_URL);
             });
         });
-    });    
+    });
 });

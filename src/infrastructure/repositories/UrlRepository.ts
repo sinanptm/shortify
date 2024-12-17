@@ -50,8 +50,8 @@ export default class UrlRepository implements IUrlRepository {
         return await this.urlModel.find({ topic, userId }).lean();
     }
 
-    async incrementClicks(id: string): Promise<void> {
-        await this.urlModel.findByIdAndUpdate(id, {
+    async incrementClicks(id: string): Promise<IUrl | null> {
+        return await this.urlModel.findByIdAndUpdate(id, {
             $inc: { clicks: 1 },
             lastAccessed: new Date()
         });

@@ -18,14 +18,14 @@ export default class RedirectUseCase {
     async exec(alias: string, request: Request): Promise<string> {
         const url = await this.findUrlByAlias(alias);
         const analyticsData = await this.prepareAnalyticsData(url, request);
-        await Promise.all([
+        const [updatedUrl] = await Promise.all([
             this.urlRepository.incrementClicks(url._id!),
-            this.clickAnalyticsRepository.create(analyticsData),
-            this.urlRepository.update(url._id!, {
-                ...url,
-                clicks: (url.clicks || 0) + 1
-            })
+            this.clickAnalyticsRepository.create(analyticsData)
         ]);
+
+        await this.cacheService.invalidateUrlCache(url.shortUrl!);
+        await this.cacheService.cacheUrl(updatedUrl!);
+
         return url.longUrl!;
     }
 
@@ -47,7 +47,7 @@ export default class RedirectUseCase {
     private async prepareAnalyticsData(url: IUrl, request: Request): Promise<IClickAnalytics> {
         const ipAddress = this.extractIpAddress(request);
         const userAgent = request.get('User-Agent') || 'Unknown';
-        const geoLocation =await this.getGeoLocation(ipAddress);
+        const geoLocation = await this.getGeoLocation(ipAddress);
 
         return {
             urlId: url._id,
@@ -64,11 +64,14 @@ export default class RedirectUseCase {
 
     private async getGeoLocation(ipAddress: string): Promise<GeoLocationResponse | null> {
         let geoLocation = await this.cacheService.getCachedGeoLocation(ipAddress);
-        
+
         if (geoLocation) return geoLocation;
 
-        await this.geolocationService.locate(ipAddress);
-        
+        geoLocation = await this.geolocationService.locate(ipAddress);
+        if (geoLocation) {
+            await this.cacheService.cacheGeoLocation(geoLocation);
+        }
+
         return geoLocation;
     }
 

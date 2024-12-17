@@ -7,6 +7,6 @@ export default interface IUrlRepository extends BaseRepository<IUrl> {
     findByCustomAlias(alias: string): Promise<IUrl | null>;
     findByUserId(userId: string): Promise<IUrl[]>;
     findByTopic(topic: string, userId: string): Promise<IUrl[]>;
-    incrementClicks(id: string): Promise<void>;
+    incrementClicks(id: string): Promise<IUrl|null>;
     findTopUrls(userId: string, limit: number): Promise<IUrl[]>;
 }
