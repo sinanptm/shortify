@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "license":"UNLICENSED",
   "scripts": {
     "start": "node -r tsconfig-paths/register dist/index.js",
     "dev": "nodemon",

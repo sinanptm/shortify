@@ -7,8 +7,6 @@ const mockCacheService: jest.Mocked<ICacheService> = {
     getCachedAnalytics: jest.fn(),
     getCachedGeoLocation: jest.fn(),
     getCachedUrl: jest.fn(),
-    invalidateAnalyticsCache: jest.fn(),
-    invalidateGeoLocationCache: jest.fn(),
     invalidateUrlCache: jest.fn()
 };
 
