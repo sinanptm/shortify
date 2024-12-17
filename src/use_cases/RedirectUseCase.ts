@@ -8,22 +8,22 @@ import IClickAnalytics from '@/domain/entities/IClickAnalytics';
 
 export default class RedirectUseCase {
     constructor(
-        private urlRepository: IUrlRepository,
-        private clickAnalyticsRepository: IClickAnalyticsRepository,
-        private geolocationService: IGeolocationService
+        private readonly urlRepository: IUrlRepository,
+        private readonly clickAnalyticsRepository: IClickAnalyticsRepository,
+        private readonly geolocationService: IGeolocationService
     ) { }
 
     async exec(alias: string, request: Request): Promise<string> {
         const url = await this.findUrlByAlias(alias);
-
-        await this.urlRepository.incrementClicks(url._id!);
-
-        const analyticsData = await this.extractAnalyticsData(url, request);
-
-        await this.clickAnalyticsRepository.create(analyticsData);
-
-        await this.urlRepository.update(url._id!, { ...url, clicks: url.clicks! + 1 });
-
+        const analyticsData = await this.prepareAnalyticsData(url, request);
+        await Promise.all([
+            this.urlRepository.incrementClicks(url._id!),
+            this.clickAnalyticsRepository.create(analyticsData),
+            this.urlRepository.update(url._id!, {
+                ...url,
+                clicks: (url.clicks || 0) + 1
+            })
+        ]);
         return url.longUrl!;
     }
 
@@ -38,21 +38,21 @@ export default class RedirectUseCase {
         return url;
     }
 
-    private async extractAnalyticsData(url: IUrl, request: Request): Promise<IClickAnalytics> {
+    private async prepareAnalyticsData(url: IUrl, request: Request): Promise<IClickAnalytics> {
         const ipAddress = this.extractIpAddress(request);
-
+        const userAgent = request.get('User-Agent') || 'Unknown';
         const geoLocation = await this.geolocationService.locate(ipAddress);
 
         return {
             urlId: url._id,
             userId: url.userId,
             ipAddress,
-            userAgent: request.get('User-Agent') || 'Unknown',
-            deviceType: this.detectDeviceType(request),
-            osType: this.detectOsType(request),
-            browser: this.detectBrowserType(request),
+            userAgent,
+            deviceType: this.detectDeviceType(userAgent),
+            osType: this.detectOsType(userAgent),
+            browser: this.detectBrowserType(userAgent),
             country: geoLocation?.country || 'Unknown',
-            timestamp: new Date(),
+            timestamp: new Date()
         };
     }
 
@@ -65,30 +65,27 @@ export default class RedirectUseCase {
         );
     }
 
-    private detectDeviceType(request: Request): string {
-        const userAgent = request.get('User-Agent') || '';
-        if (/mobile/i.test(userAgent)) return 'Mobile';
+    private detectDeviceType(userAgent: string): string {
+        if (/iphone|ipad|android|mobile|phone/i.test(userAgent)) return 'Mobile';
         if (/tablet/i.test(userAgent)) return 'Tablet';
         return 'Desktop';
     }
 
-    private detectOsType(request: Request): string {
-        const userAgent = request.get('User-Agent') || '';
-        if (/Windows/i.test(userAgent)) return 'Windows';
-        if (/Macintosh/i.test(userAgent)) return 'macOS';
-        if (/Linux/i.test(userAgent)) return 'Linux';
-        if (/iOS/i.test(userAgent)) return 'iOS';
-        if (/Android/i.test(userAgent)) return 'Android';
+    private detectOsType(userAgent: string): string {
+        if (/iphone|ipad|ios/i.test(userAgent)) return 'iOS';
+        if (/android/i.test(userAgent)) return 'Android';
+        if (/windows/i.test(userAgent)) return 'Windows';
+        if (/macintosh|mac os/i.test(userAgent)) return 'macOS';
+        if (/linux/i.test(userAgent)) return 'Linux';
         return 'Unknown';
     }
 
-    private detectBrowserType(request: Request): string {
-        const userAgent = request.get('User-Agent') || '';
-        if (/Chrome/i.test(userAgent)) return 'Chrome';
-        if (/Firefox/i.test(userAgent)) return 'Firefox';
-        if (/Safari/i.test(userAgent)) return 'Safari';
-        if (/Edge/i.test(userAgent)) return 'Edge';
-        if (/MSIE/i.test(userAgent) || /Trident/i.test(userAgent)) return 'Internet Explorer';
+    private detectBrowserType(userAgent: string): string {
+        if (/chrome/i.test(userAgent) && !/edge/i.test(userAgent)) return 'Chrome';
+        if (/firefox/i.test(userAgent)) return 'Firefox';
+        if (/safari/i.test(userAgent) && !/chrome/i.test(userAgent)) return 'Safari';
+        if (/edge/i.test(userAgent)) return 'Edge';
+        if (/msie|trident/i.test(userAgent)) return 'Internet Explorer';
         return 'Unknown';
     }
 }

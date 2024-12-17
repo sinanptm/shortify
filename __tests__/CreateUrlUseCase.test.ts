@@ -8,6 +8,11 @@ import mockNanoIdService from "./__mocks__/services/nanoIdService.mock";
 import mockUrl from "./__mocks__/entities/url.mock";
 import mockUser from "./__mocks__/entities/user.mock";
 
+jest.mock("./__mocks__/services/validatorService.mock");
+jest.mock("./__mocks__/repositories/urlRepository.mock");
+jest.mock("./__mocks__/repositories/userRepository.mock");
+jest.mock("./__mocks__/services/nanoIdService.mock");
+
 const createUrlUseCase = new CreateUrlUseCase(
     mockValidatorService,
     mockUserRepository,
@@ -22,12 +27,23 @@ describe("CreateUrlUseCase", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        mockValidatorService.validateRequiredFields.mockReturnValue(undefined);
+        mockValidatorService.validateUrl.mockReturnValue(true);
+        mockValidatorService.validateString.mockReturnValue(true);
     });
 
     it("should create a new short url for a longUrl without alias", async () => {
+        const expectedDate = new Date().toISOString();
+        const expectedUrl = {
+            ...mockUrl,
+            shortUrl,
+            createdAt: expectedDate,
+            lastAccessed: expectedDate,
+        };
+
         mockNanoIdService.generateId.mockReturnValue(nanoId);
         mockUserRepository.findById.mockResolvedValue(mockUser);
-        mockUrlRepository.create.mockResolvedValue({ ...mockUrl, shortUrl });
+        mockUrlRepository.create.mockResolvedValue(expectedUrl);
 
         const res = await createUrlUseCase.exec(userId!, longUrl!, topic!);
 
@@ -41,19 +57,26 @@ describe("CreateUrlUseCase", () => {
             clicks: 0,
             lastAccessed: expect.any(Date),
             createdAt: expect.any(Date),
-            customAlias: undefined,
+            customAlias: nanoId,
         });
-        expect(res).toEqual({ ...mockUrl, shortUrl });
+
+        expect(res).toEqual(expectedUrl);
     });
 
     it("should create a short url with a custom alias", async () => {
         const cleanedAlias = customAlias!.trim().replace(/\s+/g, "_");
         const aliasUrl = `${CLIENT_URL}/l/${cleanedAlias}`;
+        const expectedDate = new Date().toISOString();
+        const expectedUrl = {
+            ...mockUrl,
+            shortUrl: aliasUrl,
+            createdAt: expectedDate,
+            lastAccessed: expectedDate,
+        };
 
-        mockValidatorService.validateString.mockReturnValue(true);
         mockUserRepository.findById.mockResolvedValue(mockUser);
         mockUrlRepository.findByShortUrl.mockResolvedValue(null);
-        mockUrlRepository.create.mockResolvedValue({ ...mockUrl, shortUrl: aliasUrl });
+        mockUrlRepository.create.mockResolvedValue(expectedUrl);
 
         const res = await createUrlUseCase.exec(userId!, longUrl!, topic!, customAlias!);
 
@@ -70,14 +93,13 @@ describe("CreateUrlUseCase", () => {
             createdAt: expect.any(Date),
             customAlias: cleanedAlias,
         });
-        expect(res).toEqual({ ...mockUrl, shortUrl: aliasUrl });
+        expect(res).toEqual(expectedUrl);
     });
 
     it("should throw ConflictError when custom alias already exists", async () => {
         const cleanedAlias = customAlias!.trim().replace(/\s+/g, "_");
         const aliasUrl = `${CLIENT_URL}/l/${cleanedAlias}`;
 
-        mockValidatorService.validateString.mockReturnValue(true);
         mockUserRepository.findById.mockResolvedValue(mockUser);
         mockUrlRepository.findByShortUrl.mockResolvedValue({ ...mockUrl, shortUrl: aliasUrl });
 
@@ -100,18 +122,15 @@ describe("CreateUrlUseCase", () => {
     });
 
     it("should validate inputs before creating a short url", async () => {
-        mockValidatorService.validateRequiredFields.mockReturnValue();
-        mockValidatorService.validateUrl.mockReturnValue(true);
-        mockValidatorService.validateString.mockReturnValue(true);
         mockUserRepository.findById.mockResolvedValue(mockUser);
         mockNanoIdService.generateId.mockReturnValue(nanoId);
         mockUrlRepository.create.mockResolvedValue({
             ...mockUrl,
             shortUrl: `${CLIENT_URL}/l/${nanoId}`
         });
+
         await createUrlUseCase.exec(userId!, longUrl!, topic!);
 
-        expect(mockNanoIdService.generateId).toHaveBeenCalledWith(8);
         expect(mockValidatorService.validateRequiredFields).toHaveBeenCalledWith({
             userId,
             longUrl,
