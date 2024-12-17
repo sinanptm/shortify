@@ -4,6 +4,7 @@ import IClickAnalytics from "@/domain/entities/IClickAnalytics";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import ICacheService from "@/domain/interface/services/ICacheService";
+import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
 
 type AggregatedClickData = {
   date: string;
@@ -83,21 +84,7 @@ export default class GetUrlAnalyticsUseCase {
       (click) => new Date(click.timestamp!) >= sevenDaysAgo
     );
 
-    return this.aggregateClicksByDate(recentData);
+    return aggregateClicksByDate(recentData);
   }
 
-  private aggregateClicksByDate(data: IClickAnalytics[]): AggregatedClickData[] {
-    return data.reduce<AggregatedClickData[]>((acc, click) => {
-      const date = new Date(click.timestamp!).toISOString().split("T")[0];
-      const existingDate = acc.find((item) => item.date === date);
-
-      if (existingDate) {
-        existingDate.count += 1;
-      } else {
-        acc.push({ date, count: 1 });
-      }
-
-      return acc;
-    }, []);
-  }
 }

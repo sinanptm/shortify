@@ -5,6 +5,7 @@ import { IUrlWithClickCount } from "@/domain/entities/IUrl";
 import ICacheService from "@/domain/interface/services/ICacheService";
 import { AggregatedClickData, TopicAnalytics } from "@/types";
 import { NotFoundError } from "@/domain/entities/CustomErrors";
+import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
 
 export default class GetTopicAnalyticsUseCase {
     constructor(
@@ -64,7 +65,7 @@ export default class GetTopicAnalyticsUseCase {
         const clickData: IClickAnalytics[] = await this.clickAnalyticsRepository.findByUrlIds(urlIds);
         const recentData = this.filterRecentClicks(clickData);
 
-        return this.aggregateClicksByDate(recentData);
+        return aggregateClicksByDate(recentData);
     }
 
     private filterRecentClicks(data: IClickAnalytics[]): IClickAnalytics[] {
@@ -72,20 +73,5 @@ export default class GetTopicAnalyticsUseCase {
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); ``;
 
         return data.filter((click) => new Date(click.timestamp!) >= sevenDaysAgo);
-    }
-
-    private aggregateClicksByDate(data: IClickAnalytics[]): AggregatedClickData[] {
-        return data.reduce<AggregatedClickData[]>((acc, click) => {
-            const date = new Date(click.timestamp!).toISOString().split("T")[0];
-
-            const existingDateEntry = acc.find((item) => item.date === date);
-            if (existingDateEntry) {
-                existingDateEntry.count += 1;
-            } else {
-                acc.push({ date, count: 1 });
-            }
-
-            return acc;
-        }, []);
     }
 }
