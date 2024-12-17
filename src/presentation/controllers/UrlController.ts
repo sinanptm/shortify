@@ -1,5 +1,6 @@
 import { CustomRequest, StatusCode } from "@/types";
 import CreateUrlUseCase from "@/use_cases/CreateUrlUseCase";
+import GetTopicAnalytics from "@/use_cases/GetTopicAnalytics";
 import GetUrlAnalyticsUseCase from "@/use_cases/GetUrlAnalyticsUseCase";
 import RedirectUseCase from "@/use_cases/RedirectUseCase";
 import { NextFunction, Response } from "express";
@@ -8,7 +9,8 @@ export default class UrlController {
     constructor(
         private readonly createUrlUseCase: CreateUrlUseCase,
         private readonly redirectUseCase: RedirectUseCase,
-        private readonly getAnalyticsUseCase: GetUrlAnalyticsUseCase
+        private readonly getAnalyticsUseCase: GetUrlAnalyticsUseCase,
+        private readonly getTopicAnalyticsUseCase: GetTopicAnalytics
     ) { }
 
     async createUrl(req: CustomRequest, res: Response, next: NextFunction) {
@@ -42,6 +44,17 @@ export default class UrlController {
             res.status(StatusCode.Success).json(analytics);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async getTopicAnalytics(req: CustomRequest, res: Response, next: NextFunction){
+        try {
+            const topic = req.params.topic;
+            const analytics = await this.getTopicAnalyticsUseCase.exec(topic);
+
+            res.status(StatusCode.Success).json(analytics);
+        } catch (error) {
+            next(error)
         }
     }
 }

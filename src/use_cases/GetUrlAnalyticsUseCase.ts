@@ -63,11 +63,11 @@ export default class GetUrlAnalyticsUseCase {
   }
 
   private async findAnalytics(shortUrl: string, urlId: string) {
-    let analytics = await this.cacheService.getCachedAnalytics(shortUrl);
+    let analytics = await this.cacheService.getCachedUrlAnalytics(shortUrl);
 
     if (!analytics) {
       analytics = await this.clickAnalyticsRepository.findByUrlId(urlId);
-      await this.cacheService.cacheAnalytics(shortUrl, analytics);
+      await this.cacheService.cacheUrlAnalytics(shortUrl, analytics);
     }
 
     return analytics;

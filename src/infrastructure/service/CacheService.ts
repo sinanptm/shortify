@@ -4,13 +4,15 @@ import ICacheService from '@/domain/interface/services/ICacheService';
 import IUrl from '@/domain/entities/IUrl';
 import IClickAnalytics from '@/domain/entities/IClickAnalytics';
 import { GeoLocationResponse } from '@/domain/interface/services/IGeolocationService';
+import { TopicAnalytics } from '@/types';
 
 export class CacheService implements ICacheService {
     private client: RedisClientType;
 
     private readonly urlCachePrefix = 'url:';
-    private readonly analyticsCachePrefix = 'analytics:';
+    private readonly analyticsCachePrefix = "analytics:";
     private readonly geoLocationCachePrefix = 'geo:';
+    private readonly topicAnalyticsPrefix = "topic:";
     private readonly expTime = 3600;
 
     constructor() {
@@ -33,9 +35,9 @@ export class CacheService implements ICacheService {
         }
     }
 
-    private async setCache<T>(key: string, value: T): Promise<void> {
+    private async setCache<T>(key: string, value: T, expTime: number = this.expTime): Promise<void> {
         try {
-            await this.client.set(key, JSON.stringify(value), { EX: this.expTime });
+            await this.client.set(key, JSON.stringify(value), { EX: expTime });
         } catch (error) {
             logger.error(`Failed to set cache for key ${key}: ${error}`);
         }
@@ -75,23 +77,34 @@ export class CacheService implements ICacheService {
     }
 
 
-    async cacheAnalytics(shortUrl: string, analytics: IClickAnalytics[]): Promise<void> {
+    async cacheUrlAnalytics(shortUrl: string, analytics: IClickAnalytics[]): Promise<void> {
         const key = `${this.analyticsCachePrefix}${shortUrl}`;
         await this.setCache(key, analytics);
     }
 
-    async getCachedAnalytics(shortUrl: string): Promise<IClickAnalytics[] | null> {
+    async getCachedUrlAnalytics(shortUrl: string): Promise<IClickAnalytics[] | null> {
         const key = `${this.analyticsCachePrefix}${shortUrl}`;
         return this.getCache<IClickAnalytics[]>(key);
     }
 
     async cacheGeoLocation(geoLocation: GeoLocationResponse): Promise<void> {
         const key = `${this.geoLocationCachePrefix}${geoLocation.ip}`;
-        await this.client.set(key, JSON.stringify(geoLocation), { EX: this.expTime * 24 });
+        await this.setCache(key, geoLocation, this.expTime * 24);
     }
 
     async getCachedGeoLocation(ip: string): Promise<GeoLocationResponse | null> {
         const key = `${this.geoLocationCachePrefix}${ip}`;
         return this.getCache<GeoLocationResponse>(key);
+    }
+
+
+    async cacheTopicAnalytics(analytics: TopicAnalytics): Promise<void> {
+        const key = `${this.topicAnalyticsPrefix}${analytics.topic}`;
+        await this.setCache(key,analytics);
+    };
+
+    async getCachedTopicAnalytics(topic: string): Promise<TopicAnalytics | null> {
+        const key = `${this.topicAnalyticsPrefix}${topic}`;
+        return await this.getCache<TopicAnalytics>(key);
     }
 }

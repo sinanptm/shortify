@@ -1,3 +1,4 @@
+import IUrl from "./IUrl";
 import IUser from "./IUser";
 
 export default interface IUrl {
@@ -11,4 +12,8 @@ export default interface IUrl {
     readonly lastAccessed?: Date | string;
     readonly createdAt?: Date | string;
     readonly updatedAt?: Date | string;
+}
+export interface IUrlWithClickCount extends IUrl {
+    totalClicks: number;
+    uniqueClicks: number;
 }

@@ -1,5 +1,3 @@
-import IUrl from "@/domain/entities/IUrl";
-import IUser from "@/domain/entities/IUser";
 import { Request } from "express";
 
 export enum StatusCode {
@@ -27,4 +25,23 @@ export interface CustomRequest extends Request {
         id: string;
         email: string;
     };
+}
+
+export type AggregatedClickData = {
+    date: string;
+    count: number;
+    shortUrl?: string;
+};
+
+
+export type TopicAnalytics = {
+    topic:string,
+    urls:{
+        totalClicks:number,
+        uniqueClicks:number,
+        shortUrl:string
+    }[],
+    uniqueClicks:number,
+    totalClicks:number,
+    clicksByDate:AggregatedClickData[]
 }

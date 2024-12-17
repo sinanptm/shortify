@@ -64,6 +64,10 @@ export default class ClickAnalyticsRepository implements IClickAnalyticsReposito
         ]);
     }
 
+    async findByUrlIds(urlIds: string[]): Promise<IClickAnalytics[]> {
+        return await this.analyticsModel.find({ urlId: { $in: urlIds } });
+    }
+
     async getOsAnalytics(urlId: string): Promise<any> {
         return await this.analyticsModel.aggregate([
             { $match: { urlId } },

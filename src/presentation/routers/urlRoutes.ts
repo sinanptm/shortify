@@ -13,6 +13,7 @@ import UserRepository from '@/infrastructure/repositories/UserRepository';
 import ValidatorService from '@/infrastructure/service/ValidatorService';
 import GeolocationService from '@/infrastructure/service/GeoLocationService';
 import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyticsRepository';
+import GetTopicAnalyticsUseCase from '@/use_cases/GetTopicAnalytics';
 
 const route = Router();
 const tokenService = new TokenService();
@@ -43,6 +44,11 @@ const getUrlAnalyticsUseCase = new GetUrlAnalyticsUseCase(
     clickAnalyticsRepository,
     cacheService
 );
+const getTopicAnalyticsUseCase = new GetTopicAnalyticsUseCase(
+    urlRepository,
+    clickAnalyticsRepository,
+    cacheService
+);
 
 const limiterMiddleware = new RateLimiterMiddleware(111);
 const limiter = limiterMiddleware.exec.bind(limiterMiddleware);
@@ -50,13 +56,15 @@ const authMiddleware = new AuthMiddleware(tokenService);
 const urlController = new UrlController(
     createUrlUseCase,
     redirectUseCase,
-    getUrlAnalyticsUseCase
+    getUrlAnalyticsUseCase,
+    getTopicAnalyticsUseCase
 );
 
 route.use(authMiddleware.exec);
 
-route.post("/shorten", limiter, urlController.createUrl.bind(urlController));
+route.get("/analytics/topic/:topic", urlController.getTopicAnalytics.bind(urlController));
 route.get("/shorten/:alias", urlController.handleRedirect.bind(urlController));
 route.get("/analytics/:alias", urlController.getUrlAnalytics.bind(urlController));
+route.post("/shorten", limiter, urlController.createUrl.bind(urlController));
 
 export default route;
