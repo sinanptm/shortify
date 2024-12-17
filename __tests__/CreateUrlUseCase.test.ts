@@ -9,12 +9,6 @@ import mockNanoIdService from "./__mocks__/services/nanoIdService.mock";
 import mockUrl from "./__mocks__/entities/url.mock";
 import mockUser from "./__mocks__/entities/user.mock";
 
-jest.mock("./__mocks__/services/validatorService.mock");
-jest.mock("./__mocks__/repositories/urlRepository.mock");
-jest.mock("./__mocks__/repositories/userRepository.mock");
-jest.mock("./__mocks__/services/nanoIdService.mock");
-jest.mock("./__mocks__/services/cacheService.mock.ts");
-
 const createUrlUseCase = new CreateUrlUseCase(
     mockValidatorService,
     mockUserRepository,

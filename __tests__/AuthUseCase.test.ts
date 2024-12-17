@@ -4,10 +4,6 @@ import mockUserRepository  from "./__mocks__/repositories/userRepository.mock";
 import mockTokenService  from "./__mocks__/services/tokenService.mock";
 import mockValidatorService  from './__mocks__/services/validatorService.mock';
 
-jest.mock("./__mocks__/repositories/userRepository.mock.ts");
-jest.mock("./__mocks__/services/tokenService.mock");
-jest.mock("./__mocks__/services/validatorService.mock");
-
 const authUseCase = new AuthUseCase(
     mockUserRepository,
     mockValidatorService,

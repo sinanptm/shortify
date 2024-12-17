@@ -7,11 +7,6 @@ import mockUrl from "./__mocks__/entities/url.mock";
 import mockGeoLocation from "./__mocks__/utils/geoLocation.mock";
 import mockCacheService from "./__mocks__/services/cacheService.mock";
 
-jest.mock("./__mocks__/repositories/urlRepository.mock");
-jest.mock("./__mocks__/repositories/clickAnalyticsRepository.mock");
-jest.mock("./__mocks__/services/geolocationService.mock");
-jest.mock("./__mocks__/services/cacheService.mock.ts");
-
 describe("RedirectUseCase", () => {
     const IP_ADDRESS = "123.123.123.123";
     const DESKTOP_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
