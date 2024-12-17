@@ -6,6 +6,7 @@ import { NotFoundError } from "@/domain/entities/CustomErrors";
 import IUrl from '@/domain/entities/IUrl';
 import IClickAnalytics from '@/domain/entities/IClickAnalytics';
 import ICacheService from '@/domain/interface/services/ICacheService';
+import { CLIENT_URL } from '@/config/env';
 
 export default class RedirectUseCase {
     constructor(
@@ -30,7 +31,7 @@ export default class RedirectUseCase {
     }
 
     private async findUrlByAlias(alias: string): Promise<IUrl> {
-        const fullUrl = `${process.env.CLIENT_URL}/l/${alias}`;
+        const fullUrl = `${CLIENT_URL}/l/${alias}`;
         let url = await this.cacheService.getCachedUrl(fullUrl);
 
         if (url) return url;

@@ -38,7 +38,11 @@ const redirectUseCase = new RedirectUseCase(
     geoLocationService,
     cacheService
 );
-const getUrlAnalyticsUseCase = new GetUrlAnalyticsUseCase();
+const getUrlAnalyticsUseCase = new GetUrlAnalyticsUseCase(
+    urlRepository,
+    clickAnalyticsRepository,
+    cacheService
+);
 
 const limiterMiddleware = new RateLimiterMiddleware(111);
 const limiter = limiterMiddleware.exec.bind(limiterMiddleware);

@@ -75,21 +75,15 @@ export class CacheService implements ICacheService {
     }
 
 
-    async cacheAnalytics(shortUrl: string, analytics: IClickAnalytics): Promise<void> {
+    async cacheAnalytics(shortUrl: string, analytics: IClickAnalytics[]): Promise<void> {
         const key = `${this.analyticsCachePrefix}${shortUrl}`;
         await this.setCache(key, analytics);
     }
 
-    async getCachedAnalytics(shortUrl: string): Promise<IClickAnalytics | null> {
+    async getCachedAnalytics(shortUrl: string): Promise<IClickAnalytics[] | null> {
         const key = `${this.analyticsCachePrefix}${shortUrl}`;
-        return this.getCache<IClickAnalytics>(key);
+        return this.getCache<IClickAnalytics[]>(key);
     }
-
-    async invalidateAnalyticsCache(shortUrl: string): Promise<void> {
-        const key = `${this.analyticsCachePrefix}${shortUrl}`;
-        await this.deleteCache(key);
-    }
-
 
     async cacheGeoLocation(geoLocation: GeoLocationResponse): Promise<void> {
         const key = `${this.geoLocationCachePrefix}${geoLocation.ip}`;
@@ -99,10 +93,5 @@ export class CacheService implements ICacheService {
     async getCachedGeoLocation(ip: string): Promise<GeoLocationResponse | null> {
         const key = `${this.geoLocationCachePrefix}${ip}`;
         return this.getCache<GeoLocationResponse>(key);
-    }
-
-    async invalidateGeoLocationCache(ip: string): Promise<void> {
-        const key = `${this.geoLocationCachePrefix}${ip}`;
-        await this.deleteCache(key);
     }
 }

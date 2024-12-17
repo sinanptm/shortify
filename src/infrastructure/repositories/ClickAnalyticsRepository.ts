@@ -49,7 +49,7 @@ export default class ClickAnalyticsRepository implements IClickAnalyticsReposito
             {
                 $group: {
                     _id: '$deviceType',
-                    uniqueClicks: { $addToSet: '$visitorId' },
+                    uniqueClicks: { $addToSet: '$ipAddress' },
                     totalClicks: { $sum: 1 }
                 }
             },
@@ -70,7 +70,7 @@ export default class ClickAnalyticsRepository implements IClickAnalyticsReposito
             {
                 $group: {
                     _id: '$osType',
-                    uniqueClicks: { $addToSet: '$visitorId' },
+                    uniqueClicks: { $addToSet: '$ipAddress' },
                     totalClicks: { $sum: 1 }
                 }
             },
