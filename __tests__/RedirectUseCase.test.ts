@@ -6,6 +6,7 @@ import mockGeolocationService from "./__mocks__/services/geolocationService.mock
 import mockUrl from "./__mocks__/entities/url.mock";
 import mockGeoLocation from "./__mocks__/utils/geoLocation.mock";
 import mockCacheService from "./__mocks__/services/cacheService.mock";
+import { CLIENT_URL } from "@/config/env";
 
 describe("RedirectUseCase", () => {
     const IP_ADDRESS = "123.123.123.123";
@@ -38,7 +39,7 @@ describe("RedirectUseCase", () => {
     describe("RedirectUseCase", () => {
         const ALIAS = "exampleAlias";
         const MOBILE_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)";
-        const FULL_URL = `${process.env.CLIENT_URL}/l/${ALIAS}`;
+        const FULL_URL = `${CLIENT_URL}/l/${ALIAS}`;
 
         let redirectUseCase: RedirectUseCase;
         let mockRequest: any;
