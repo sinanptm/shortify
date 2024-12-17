@@ -5,9 +5,9 @@ import { AuthenticationError } from "@/domain/entities/CustomErrors";
 
 export default class AuthUseCase {
     constructor(
-        private useRepository: IUserRepository,
-        private validatorService: IValidatorService,
-        private tokenService: ITokenService
+        private readonly useRepository: IUserRepository,
+        private readonly validatorService: IValidatorService,
+        private readonly tokenService: ITokenService
     ) { };
 
     async exec(email: string, name: string): Promise<{ accessToken: string; refreshToken: string; }> {

@@ -8,11 +8,11 @@ import IValidatorService from "@/domain/interface/services/IValidatorService";
 
 export default class CreateUrlUseCase {
     constructor(
-        private validatorService: IValidatorService,
-        private userRepository: IUserRepository,
-        private urlRepository: IUrlRepository,
-        private nanoIdService: INanoIdService,
-        private cacheService: ICacheService
+        private readonly validatorService: IValidatorService,
+        private readonly userRepository: IUserRepository,
+        private readonly urlRepository: IUrlRepository,
+        private readonly nanoIdService: INanoIdService,
+        private readonly cacheService: ICacheService
     ) { }
 
 

@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express";
 
 export default class AuthController {
     constructor(
-        private authUseCase: AuthUseCase
+        private readonly authUseCase: AuthUseCase
     ) { }
 
     async exec(req: Request, res: Response, next: NextFunction) {

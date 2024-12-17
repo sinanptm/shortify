@@ -1,12 +1,14 @@
 import { CustomRequest, StatusCode } from "@/types";
 import CreateUrlUseCase from "@/use_cases/CreateUrlUseCase";
+import GetUrlAnalyticsUseCase from "@/use_cases/GetUrlAnalyticsUseCase";
 import RedirectUseCase from "@/use_cases/RedirectUseCase";
 import { NextFunction, Response } from "express";
 
 export default class UrlController {
     constructor(
-        private createUrlUseCase: CreateUrlUseCase,
-        private redirectUseCase: RedirectUseCase
+        private readonly createUrlUseCase: CreateUrlUseCase,
+        private readonly redirectUseCase: RedirectUseCase,
+        private readonly getAnalyticsUseCase: GetUrlAnalyticsUseCase
     ) { }
 
     async createUrl(req: CustomRequest, res: Response, next: NextFunction) {
@@ -21,14 +23,25 @@ export default class UrlController {
         }
     }
 
-    async handleRedirect(req: CustomRequest, res: Response, next:NextFunction) {
+    async handleRedirect(req: CustomRequest, res: Response, next: NextFunction) {
         try {
             const alias = req.params.alias;
             const longUrl = await this.redirectUseCase.exec(alias, req);
-            
+
             res.redirect(StatusCode.Redirect, longUrl);
         } catch (error) {
-            next(error)
+            next(error);
+        }
+    }
+
+    async getUrlAnalytics(req: CustomRequest, res: Response, next: NextFunction) {
+        try {
+            const alias = req.params.alias;
+            const analytics = await this.getAnalyticsUseCase.exec(alias);
+
+            res.status(StatusCode.Success).json(analytics);
+        } catch (error) {
+            next(error);
         }
     }
 }

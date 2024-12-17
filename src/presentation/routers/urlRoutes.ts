@@ -1,24 +1,25 @@
 import { Router } from 'express';
-import AuthMiddleware from '../middlewares/AuthMiddleware';
-import TokenService from '@/infrastructure/service/TokenService';
-import CreateUrlUseCase from '@/use_cases/CreateUrlUseCase';
-import ValidatorService from '@/infrastructure/service/ValidatorService';
-import UrlRepository from '@/infrastructure/repositories/UrlRepository';
-import UserRepository from '@/infrastructure/repositories/UserRepository';
-import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyticsRepository';
 import UrlController from '../controllers/UrlController';
-import NanoIdService from '@/infrastructure/service/NanoIdService';
-import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware';
 import RedirectUseCase from '@/use_cases/RedirectUseCase';
-import GeolocationService from '@/infrastructure/service/GeoLocationService';
+import AuthMiddleware from '../middlewares/AuthMiddleware';
+import CreateUrlUseCase from '@/use_cases/CreateUrlUseCase';
+import TokenService from '@/infrastructure/service/TokenService';
+import NanoIdService from '@/infrastructure/service/NanoIdService';
 import { CacheService } from '@/infrastructure/service/CacheService';
+import GetUrlAnalyticsUseCase from '@/use_cases/GetUrlAnalyticsUseCase';
+import UrlRepository from '@/infrastructure/repositories/UrlRepository';
+import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware';
+import UserRepository from '@/infrastructure/repositories/UserRepository';
+import ValidatorService from '@/infrastructure/service/ValidatorService';
+import GeolocationService from '@/infrastructure/service/GeoLocationService';
+import ClickAnalyticsRepository from '@/infrastructure/repositories/ClickAnalyticsRepository';
 
 const route = Router();
 const tokenService = new TokenService();
 const validatorService = new ValidatorService();
 const nanoIdService = new NanoIdService();
 const geoLocationService = new GeolocationService();
-const cacheService = new CacheService()
+const cacheService = new CacheService();
 
 const urlRepository = new UrlRepository();
 const userRepository = new UserRepository();
@@ -37,15 +38,21 @@ const redirectUseCase = new RedirectUseCase(
     geoLocationService,
     cacheService
 );
+const getUrlAnalyticsUseCase = new GetUrlAnalyticsUseCase();
 
 const limiterMiddleware = new RateLimiterMiddleware(111);
 const limiter = limiterMiddleware.exec.bind(limiterMiddleware);
 const authMiddleware = new AuthMiddleware(tokenService);
-const urlController = new UrlController(createUrlUseCase, redirectUseCase);
+const urlController = new UrlController(
+    createUrlUseCase,
+    redirectUseCase,
+    getUrlAnalyticsUseCase
+);
 
 route.use(authMiddleware.exec);
 
-route.post("/shorten", limiter, urlController.createUrl.bind(urlController))
-route.get("/shorten/:alias",urlController.handleRedirect.bind(urlController));
+route.post("/shorten", limiter, urlController.createUrl.bind(urlController));
+route.get("/shorten/:alias", urlController.handleRedirect.bind(urlController));
+route.get("/analytics/:alias", urlController.getUrlAnalytics.bind(urlController));
 
 export default route;
