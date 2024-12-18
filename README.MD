@@ -33,6 +33,18 @@ Before running the application, ensure you have the following installed:
 - Yarn package manager
 - Google Cloud Console account (for OAuth credentials)
 
+### Security & Authentication
+- **Auth Framework**: Passport.js
+- **Strategy**: Google OAuth 2.0
+- **Token Management**: JWT
+- **Rate Limiting**: rate-limiter-flexible
+
+### DevOps & CI/CD
+- **Continuous Integration**: GitHub Actions
+- **Continuous Deployment**: Automated deployment to AWS
+- **Code Quality**: Automated testing and linting
+- **Branch Protection**: Required status checks
+
 ## 🔐 Authentication Setup
 
 ### Google OAuth Configuration
