@@ -53,6 +53,7 @@ const getTopicAnalyticsUseCase = new GetTopicAnalyticsUseCase(
 const getOverallAnalyticsUseCase = new GetOverallAnalyticsUseCase(
     urlRepository,
     cacheService,
+    userRepository,
     clickAnalyticsRepository
 );
 
@@ -69,10 +70,10 @@ const urlController = new UrlController(
 
 route.use(authMiddleware.exec);
 
-route.get("/analytics/topic/:topic", urlController.getTopicAnalytics.bind(urlController));
 route.get("/analytics/overall", urlController.getOverallAnalytics.bind(urlController));
+route.get("/analytics/topic/:topic", urlController.getTopicAnalytics.bind(urlController));
+route.get("/analytics/alias/:alias", urlController.getUrlAnalytics.bind(urlController));
 route.get("/shorten/:alias", urlController.handleRedirect.bind(urlController));
-route.get("/analytics/:alias", urlController.getUrlAnalytics.bind(urlController));
 route.post("/shorten", limiter, urlController.createUrl.bind(urlController));
 
 export default route;

@@ -4,12 +4,8 @@ import IClickAnalytics from "@/domain/entities/IClickAnalytics";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import ICacheService from "@/domain/interface/services/ICacheService";
+import { AggregatedClickData } from "@/types";
 import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
-
-type AggregatedClickData = {
-  date: string;
-  count: number;
-};
 
 export default class GetUrlAnalyticsUseCase {
   constructor(

@@ -48,8 +48,8 @@ export default class GetTopicAnalyticsUseCase {
 
         const urls = urlsByTopic.map(({ _id, totalClicks: urlTotal, uniqueClicks: urlUnique, shortUrl }) => {
             urlIds.push(_id!);
-            totalClicks += urlTotal;
-            uniqueClicks += urlUnique;
+            totalClicks+= urlTotal;
+            uniqueClicks +=urlUnique;
 
             return {
                 totalClicks: urlTotal,

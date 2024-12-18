@@ -4,7 +4,7 @@ import ICacheService from '@/domain/interface/services/ICacheService';
 import IUrl from '@/domain/entities/IUrl';
 import IClickAnalytics from '@/domain/entities/IClickAnalytics';
 import { GeoLocationResponse } from '@/domain/interface/services/IGeolocationService';
-import { TopicAnalytics } from '@/types';
+import { OverallAnalyticsResponse, TopicAnalytics } from '@/types';
 
 export class CacheService implements ICacheService {
     private client: RedisClientType;
@@ -13,6 +13,7 @@ export class CacheService implements ICacheService {
     private readonly analyticsCachePrefix = "analytics:";
     private readonly geoLocationCachePrefix = 'geo:';
     private readonly topicAnalyticsPrefix = "topic:";
+    private readonly overallAnalyticsPrefix = "overall:";
     private readonly expTime = 3600;
 
     constructor() {
@@ -100,11 +101,21 @@ export class CacheService implements ICacheService {
 
     async cacheTopicAnalytics(analytics: TopicAnalytics): Promise<void> {
         const key = `${this.topicAnalyticsPrefix}${analytics.topic}`;
-        await this.setCache(key,analytics);
+        await this.setCache(key, analytics);
     };
 
     async getCachedTopicAnalytics(topic: string): Promise<TopicAnalytics | null> {
         const key = `${this.topicAnalyticsPrefix}${topic}`;
         return await this.getCache<TopicAnalytics>(key);
+    }
+
+    async cacheOverallAnalytics(userId: string, analytics: OverallAnalyticsResponse): Promise<void> {
+        const key = `${this.overallAnalyticsPrefix}${userId}`;
+        await this.setCache(key, analytics, this.expTime / 2);
+    }
+
+    async getCachedOverallAnalytics(userId: string): Promise<OverallAnalyticsResponse | null> {
+        const key = `${this.overallAnalyticsPrefix}${userId}`;
+        return await this.getCache<OverallAnalyticsResponse>(key);
     }
 }

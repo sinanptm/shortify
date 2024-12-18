@@ -2,7 +2,8 @@ import IUrl from "@/domain/entities/IUrl";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import { IUrlWithClickCount } from "@/domain/entities/IUrl";
 import Url from "../models/Url";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
+import { OverallAnalyticsResponse } from "@/types";
 
 export default class UrlRepository implements IUrlRepository {
     private urlModel: Model<IUrl>;
@@ -26,7 +27,6 @@ export default class UrlRepository implements IUrlRepository {
             { new: true }
         ).lean();
     }
-
     async delete(id: string): Promise<void> {
         await this.urlModel.findByIdAndDelete(id);
     }

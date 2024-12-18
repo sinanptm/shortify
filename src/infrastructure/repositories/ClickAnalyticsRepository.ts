@@ -25,6 +25,7 @@ export default class ClickAnalyticsRepository implements IClickAnalyticsReposito
             { new: true }
         ).lean();
     }
+    
 
     async delete(id: string): Promise<void> {
         await this.analyticsModel.findByIdAndDelete(id);

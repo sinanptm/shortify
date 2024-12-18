@@ -1,4 +1,3 @@
-import IUrl from "./IUrl";
 import IUser from "./IUser";
 
 export default interface IUrl {
