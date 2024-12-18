@@ -1,84 +1,85 @@
-# 🔗 Shortify - URL Shortener API
+# 🚀 Shortify: Development Insights and Architectural Approach
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.0-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg)](https://expressjs.com/)
-[![Redis](https://img.shields.io/badge/Redis-4.x-red.svg)](https://redis.io/)
-[![Jest](https://img.shields.io/badge/Jest-29.x-orange.svg)](https://jestjs.io/)
-[![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
+## 🏗️ Architectural Principles
 
-## 📋 Table of Contents
-[Previous sections remain the same...]
+### Clean Architecture
+The project follows Clean Architecture principles, emphasizing:
+- Separation of Concerns
+- Dependency Inversion
+- Modular and Testable Design
 
-## 🛠 Tech Stack
+### SOLID Principles Implementation
+- **Single Responsibility Principle**: Each module and class has a focused, well-defined purpose
+- **Open/Closed Principle**: Components are open for extension but closed for modification
+- **Dependency Inversion**: High-level modules do not depend on low-level modules
+- **Interface Segregation**: Specific, focused interfaces over large, monolithic ones
+- **Liskov Substitution**: Derived classes can be substituted without altering the program's correctness
 
-- **Backend Framework**: Node.js with Express
-- **Language**: TypeScript
-- **Database**: MongoDB with Mongoose
-- **Caching**: Redis
-- **Testing**: Jest
-- **Authentication**: Passport.js with Google OAuth 2.0
-- **Package Manager**: Yarn
-- **Rate Limiting**: rate-limiter-flexible
-- **Logging**: Winston
-- **Reverse Proxy**: Nginx
-- **Hosting**: AWS
+### Object-Oriented Programming (OOP)
+- Utilized TypeScript's OOP features
+- Implemented classes with clear responsibilities
+- Created interfaces for better type safety and modularity
 
-## 🌐 Deployment
+## 🔧 Development Challenges
 
-The application is deployed on AWS with the following setup:
-- Nginx as a reverse proxy for handling requests
-- SSL/HTTPS configuration through Nginx
-- Subdomain configuration: `shortify.avm-ayurvedic.online`
-- PM2 for process management
+### Containerization Limitations
+**Docker Requirement vs System Constraints**:
+- Project was initially designed with containerization in mind
+- Due to personal system limitations, Docker implementation was deferred
+- Ensured application works consistently across development and production environments without containerization
+- Manual configuration and environment management to simulate containerized behavior
 
-### Nginx Configuration Example
-```nginx
-server {
-    listen 80;
-    server_name shortify.avm-ayurvedic.online;
+### Environment Consistency
+Despite not using Docker, maintained consistency through:
+- Detailed environment variable management
+- Comprehensive `.env.example`
+- Robust configuration handling
+- Cross-environment testing
 
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
+## 🤖 AI-Assisted Development
+
+Throughout the development of Shortify, I leveraged AI tools to:
+- Generate initial test cases
+- Assist in documentation writing
+- Provide code snippets and architectural suggestions
+- Help with boilerplate code generation
+
+**Important Note**: While AI assisted in the process, all code was carefully reviewed, validated, and manually refined to ensure quality and precision.
+
+## 📂 Folder Structure Insights
+
+```
+shortify/
+├── .github/           # CI/CD workflows
+├── dist/              # Compiled TypeScript output
+├── logs/              # Application logs
+├── node_modules/      # Dependencies
+├── src/               # Source code
+│   ├── config/        # Configuration files
+│   ├── controllers/   # Request handlers
+│   ├── middleware/    # Express middlewares
+│   ├── models/        # Database models
+│   ├── routes/        # API route definitions
+│   ├── services/      # Business logic
+│   ├── types/         # TypeScript type definitions
+│   └── utils/         # Utility functions
+├── __tests__/             # Unit tests
+├── .env               # Environment configuration
+└── tsconfig.json      # TypeScript configuration
 ```
 
-## 🔐 Authentication Implementation
+## 🔍 Development Philosophy
 
-Authentication is implemented using Passport.js with Google OAuth 2.0 strategy:
-- Passport.js for handling authentication flow
-- Google OAuth 2.0 for secure user authentication
-- JWT tokens for session management
-- Secure cookie handling for token storage
+- **Pragmatic Approach**: Balancing ideal architectural principles with practical implementation
+- **Continuous Improvement**: Iterative refinement of code and architecture
+- **Quality over Complexity**: Simple, readable, and maintainable code
 
-Example authentication flow:
-1. User initiates Google login
-2. Passport.js handles OAuth flow
-3. User information is received from Google
-4. JWT tokens are generated and stored
-5. Secure session is established
+## 🛡️ Future Improvements
 
-## ⚙️ Environment Variables
+- Complete Docker containerization
+- Enhanced test coverage
+- Performance optimization
 
-```env
-# Previous environment variables remain the same...
+---
 
-# Google OAuth credentials
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callback
-
-# Cookie settings
-COOKIE_SECRET=your_cookie_secret
-
-# AWS specific configurations
-AWS_REGION=your_aws_region
-```
-
-[Rest of the README remains the same...]
+**Disclaimer**: This project represents a practical approach to building a robust, scalable URL shortener with modern web technologies.
