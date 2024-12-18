@@ -107,28 +107,35 @@ Before running the application, ensure you have the following installed:
 ## ⚙️ Environment Variables
 
 ```env
-# Server Configuration
+# Environment Configuration
+NODE_ENV=development
+
+# MongoDB URI
+MONGO_URI=mongodb://localhost:27017/Shortify
+
+# Client URL
+CLIENT_URL=http://localhost:3000
+
+# Server Port
 PORT=8000
-NODE_ENV=production
 
-# Database
-MONGODB_URI=mongodb://localhost:27017/shortify
-REDIS_URL=redis://localhost:6379
+# Redis Configuration
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
 
-# Authentication
-GOOGLE_CLIENT_ID=your_google_client_id           # From Google Cloud Console
-GOOGLE_CLIENT_SECRET=your_google_client_secret   # From Google Cloud Console
+# JWT Token Secret
+TOKEN_SECRET=my_super_secret_key
 
-# Security
-JWT_SECRET=your_strong_jwt_secret               # Generate a strong random string
-COOKIE_SECRET=your_strong_cookie_secret         # Generate a strong random string
+# Geolocation Provider
+GEOLOCATION_PROVIDER=http://ip-api.com/json/
 
-# Rate Limiting
-RATE_LIMIT_WINDOW=15
-RATE_LIMIT_MAX_REQUESTS=100
+# Server URL
+SERVER_URL=http://localhost:8000
 
-# Logging
-LOG_LEVEL=info
+# Google OAuth Credentials
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
 ```
 
 [Rest of the sections remain the same...]
