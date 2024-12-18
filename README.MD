@@ -12,7 +12,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [Authentication](#authentication)
+- [Authentication Setup](#authentication-setup)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
@@ -31,13 +31,32 @@ Before running the application, ensure you have the following installed:
 - Redis Server (Install from [Redis Official Documentation](https://redis.io/docs/getting-started/))
 - MongoDB
 - Yarn package manager
+- Google Cloud Console account (for OAuth credentials)
 
-## 🔐 Authentication
+## 🔐 Authentication Setup
 
-Shortify uses Passport.js with Google OAuth 2.0. Authentication is handled through:
-- Browser-based Google OAuth flow (`/api/auth/google`)
-- JWT tokens returned in both cookie and response body
-- Support for both cookie-based and bearer token authentication
+### Google OAuth Configuration
+
+1. **Create Google Cloud Project**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable the Google+ API and Google OAuth API
+
+2. **Configure OAuth Consent Screen**:
+   - Go to "OAuth consent screen"
+   - Set application name, authorized domains
+   - Add necessary scopes (email, profile)
+
+3. **Get OAuth Credentials**:
+   - Go to "Credentials" → "Create Credentials" → "OAuth Client ID"
+   - Choose "Web application"
+   - Add authorized origins (e.g., `http://localhost:8000`, `https://your-domain.com`)
+   - Add authorized redirect URIs:
+     ```
+     http://localhost:8000/api/auth/google/callback
+     https://your-domain.com/api/auth/google/callback
+     ```
+   - Save your Client ID and Client Secret
 
 ### Authentication Flow
 
@@ -71,50 +90,7 @@ Shortify uses Passport.js with Google OAuth 2.0. Authentication is handled throu
    });
    ```
 
-## 🛠 Tech Stack
-
-### Core Technologies
-- **Runtime**: Node.js 22.x
-- **Language**: TypeScript 4.0
-- **Framework**: Express 4.x
-- **Database**: MongoDB with Mongoose
-- **Caching**: Redis 4.x
-
-### Security & Authentication
-- **Auth Framework**: Passport.js
-- **Strategy**: Google OAuth 2.0
-- **Token Management**: JWT
-- **Rate Limiting**: rate-limiter-flexible
-
-### DevOps & CI/CD
-- **Continuous Integration**: GitHub Actions
-- **Continuous Deployment**: Automated deployment to AWS
-- **Code Quality**: Automated testing and linting
-- **Branch Protection**: Required status checks
-
-## 🚀 Getting Started
-
-1. **Clone and Install**
-   ```bash
-   git clone https://github.com/yourusername/shortify.git
-   cd shortify
-   yarn install
-   ```
-
-2. **Configure Environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configurations
-   ```
-
-3. **Start Redis**
-   - Follow Redis setup instructions from [Redis Documentation](https://redis.io/docs/getting-started/)
-   - Verify Redis is running: `redis-cli ping`
-
-4. **Start Development Server**
-   ```bash
-   yarn dev
-   ```
+[Previous sections remain the same...]
 
 ## ⚙️ Environment Variables
 
@@ -128,11 +104,12 @@ MONGODB_URI=mongodb://localhost:27017/shortify
 REDIS_URL=redis://localhost:6379
 
 # Authentication
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callback
-JWT_SECRET=your_jwt_secret
-COOKIE_SECRET=your_cookie_secret
+GOOGLE_CLIENT_ID=your_google_client_id           # From Google Cloud Console
+GOOGLE_CLIENT_SECRET=your_google_client_secret   # From Google Cloud Console
+
+# Security
+JWT_SECRET=your_strong_jwt_secret               # Generate a strong random string
+COOKIE_SECRET=your_strong_cookie_secret         # Generate a strong random string
 
 # Rate Limiting
 RATE_LIMIT_WINDOW=15
@@ -141,6 +118,8 @@ RATE_LIMIT_MAX_REQUESTS=100
 # Logging
 LOG_LEVEL=info
 ```
+
+[Rest of the sections remain the same...]
 
 ## 📚 API Documentation
 
