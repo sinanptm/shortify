@@ -25,18 +25,18 @@ describe("GetTopicAnalyticsUseCase", () => {
             { _id: "url1", totalClicks: 100, uniqueClicks: 80, shortUrl: "shortUrl1" },
             { _id: "url2", totalClicks: 150, uniqueClicks: 120, shortUrl: "shortUrl2" }
         ];
-
+    
         const mockClickData = [
             { timestamp: new Date().toISOString(), urlId: "url1" },
             { timestamp: new Date().toISOString(), urlId: "url1" },
             { timestamp: new Date().toISOString(), urlId: "url2" },
             { timestamp: new Date().toISOString(), urlId: "url2" }
         ];
-
+    
         const mockAggregatedClickData = [
             { date: new Date().toISOString().split("T")[0], count: 4 }
         ];
-        const mockAnalytics = {
+        const mockAnalytics  = {
             topic: TOPIC,
             urls: [
                 { totalClicks: 100, uniqueClicks: 80, shortUrl: "shortUrl1" },
@@ -45,25 +45,25 @@ describe("GetTopicAnalyticsUseCase", () => {
             totalClicks: 250,
             uniqueClicks: 200,
             clicksByDate: mockAggregatedClickData
-        };
-
+        }
+    
         beforeEach(() => {
             mockCacheService.getCache.mockResolvedValue(null);
             mockUrlRepository.findByTopic.mockResolvedValue(mockUrls);
-            mockClickAnalyticsRepository.findByUrlIds.mockResolvedValue(mockClickData);
+            mockClickAnalyticsRepository.findByUrlIds.mockResolvedValue(mockClickData); 
             mockCacheService.setCache.mockResolvedValue(undefined);
         });
-
+    
         it("should retrieve analytics and return correct data", async () => {
             const analytics = await getTopicAnalyticsUseCase.exec(TOPIC);
-
+    
             expect(mockUrlRepository.findByTopic).toHaveBeenCalledWith(TOPIC);
             expect(mockClickAnalyticsRepository.findByUrlIds).toHaveBeenCalledWith(["url1", "url2"]);
-            expect(mockCacheService.setCache).toHaveBeenCalledWith(CachePrefixes.TopicAnalytics, TOPIC, mockAnalytics);
+            expect(mockCacheService.setCache).toHaveBeenCalledWith(CachePrefixes.TopicAnalytics, TOPIC, mockAnalytics );
             expect(analytics).toEqual(mockAnalytics);
         });
     });
-
+    
 
     describe("error handling", () => {
         it("should throw NotFoundError when no URLs are found for the topic", async () => {
