@@ -50,22 +50,25 @@ Throughout the development of Shortify, I leveraged AI tools to:
 
 ```
 shortify/
-├── .github/           # CI/CD workflows
-├── dist/              # Compiled TypeScript output
-├── logs/              # Application logs
-├── node_modules/      # Dependencies
-├── src/               # Source code
-│   ├── config/        # Configuration files
-│   ├── controllers/   # Request handlers
-│   ├── middleware/    # Express middlewares
-│   ├── models/        # Database models
-│   ├── routes/        # API route definitions
-│   ├── services/      # Business logic
-│   ├── types/         # TypeScript type definitions
-│   └── utils/         # Utility functions
+├── .github/               # CI/CD workflows
+├── dist/                  # Compiled TypeScript output
+├── logs/                  # Application logs
+├── node_modules/          # Dependencies
+├── src/                   # Source code
+│   ├── config/            # Configuration files
+│   ├── utils/             # Utility functions
+│   ├── domain/            # Domain logic or business rules
+│   ├── infrastructure/    # Application infrastructure 
+│   ├── presentation/      # Presentation layer 
+│   ├── use_cases/         # Use case/business processes that implement domain logic
+│   └── index.ts           # Entry point for the application
 ├── __tests__/             # Unit tests
-├── .env               # Environment configuration
-└── tsconfig.json      # TypeScript configuration
+├── .env                   # Environment configuration
+├── tsconfig.json          # TypeScript configuration
+├── jest.config.js         # Jest configuration
+├── nodemon.json           # Nodemon configuration
+└── package.json           # NPM dependencies and scripts
+
 ```
 
 ## 🔍 Development Philosophy
