@@ -20,4 +20,8 @@ export default class UserRepository implements IUserRepository {
         await this.userModel.findByIdAndDelete(id);
     }
 
+    async findByGoogleId(googleId: string): Promise<IUser | null> {
+        return await this.userModel.findOne({ googleId }).lean();
+    }
+
 }

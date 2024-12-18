@@ -1,5 +1,3 @@
-import { Request } from "express";
-
 export enum StatusCode {
     Success = 200,
     Created = 201,
@@ -18,13 +16,6 @@ export enum StatusCode {
     BadGateway = 502,
     ServiceUnavailable = 503,
     RateLimitExceeded = 429
-}
-
-export interface CustomRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-    };
 }
 
 export type AggregatedClickData = {
