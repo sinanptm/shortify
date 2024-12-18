@@ -33,7 +33,7 @@ export default class CreateUrlUseCase {
             customAlias: shortUrl
         });
 
-        await this.cacheService.setCache(CachePrefixes.UrlCache, url._id!, url, CacheDuration.TwoHours);
+        await this.cacheService.setCache(CachePrefixes.UrlCache, url.shortUrl!, url, CacheDuration.TwoHours);
         return url;
     }
 

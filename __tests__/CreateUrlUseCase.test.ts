@@ -8,6 +8,7 @@ import mockCacheService from "./__mocks__/services/cacheService.mock";
 import mockNanoIdService from "./__mocks__/services/nanoIdService.mock";
 import mockUrl from "./__mocks__/entities/url.mock";
 import mockUser from "./__mocks__/entities/user.mock";
+import { CacheDuration, CachePrefixes } from "@/domain/interface/services/ICacheService";
 
 const createUrlUseCase = new CreateUrlUseCase(
     mockValidatorService,
@@ -41,7 +42,7 @@ describe("CreateUrlUseCase", () => {
         mockNanoIdService.generateId.mockReturnValue(nanoId);
         mockUserRepository.findById.mockResolvedValue(mockUser);
         mockUrlRepository.create.mockResolvedValue(expectedUrl);
-        mockCacheService.cacheUrl.mockResolvedValue();
+        mockCacheService.setCache.mockResolvedValue();
 
         const res = await createUrlUseCase.exec(userId!, longUrl!, topic!);
 
@@ -58,7 +59,7 @@ describe("CreateUrlUseCase", () => {
             customAlias: nanoId,
         });
 
-        expect(mockCacheService.cacheUrl).toHaveBeenCalledWith(expectedUrl);
+        expect(mockCacheService.setCache).toHaveBeenCalledWith(CachePrefixes.UrlCache,expectedUrl.shortUrl!,expectedUrl,CacheDuration.TwoHours);
         expect(res).toEqual(expectedUrl);
     });
 
@@ -70,12 +71,12 @@ describe("CreateUrlUseCase", () => {
         mockUrlRepository.findByShortUrl.mockResolvedValue({ ...mockUrl, shortUrl: aliasUrl });
 
         await expect(createUrlUseCase.exec(userId!, longUrl!, topic!, customAlias!)).rejects.toThrow(
-            new ConflictError("Custom alias already exists. Please choose another.")
+            new ConflictError("Custom Alias already exists. Please Choose another.")
         );
 
         expect(mockValidatorService.validateString).toHaveBeenCalledWith(customAlias, "customAlias");
         expect(mockUrlRepository.findByShortUrl).toHaveBeenCalledWith(aliasUrl);
-        expect(mockCacheService.cacheUrl).not.toHaveBeenCalled();
+        expect(mockCacheService.setCache).not.toHaveBeenCalled();
     });
 
     it("should throw AuthenticationError if user does not exist", async () => {
@@ -86,7 +87,7 @@ describe("CreateUrlUseCase", () => {
         );
 
         expect(mockUserRepository.findById).toHaveBeenCalledWith(userId);
-        expect(mockCacheService.cacheUrl).not.toHaveBeenCalled();
+        expect(mockCacheService.setCache).not.toHaveBeenCalled();
     });
 
     it("should validate inputs before creating a short url", async () => {
@@ -105,6 +106,6 @@ describe("CreateUrlUseCase", () => {
         });
         expect(mockValidatorService.validateUrl).toHaveBeenCalledWith(longUrl);
         expect(mockValidatorService.validateString).toHaveBeenCalledWith(topic, "topic");
-        expect(mockCacheService.cacheUrl).toHaveBeenCalled();
+        expect(mockCacheService.setCache).toHaveBeenCalled();
     });
 });

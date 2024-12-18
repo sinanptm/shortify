@@ -7,6 +7,7 @@ import mockUrl from "./__mocks__/entities/url.mock";
 import mockGeoLocation from "./__mocks__/utils/geoLocation.mock";
 import mockCacheService from "./__mocks__/services/cacheService.mock";
 import { CLIENT_URL } from "@/config/env";
+import { CachePrefixes } from "@/domain/interface/services/ICacheService";
 
 describe("RedirectUseCase", () => {
     const IP_ADDRESS = "123.123.123.123";
@@ -57,8 +58,8 @@ describe("RedirectUseCase", () => {
                 })
             };
 
-            mockCacheService.getCachedUrl.mockResolvedValue(null);
-            mockCacheService.getCachedGeoLocation.mockResolvedValue(mockGeoLocation);
+            mockCacheService.getCache.mockResolvedValue(null);
+            mockCacheService.getCache.mockResolvedValue(mockGeoLocation);
 
             redirectUseCase = new RedirectUseCase(
                 mockUrlRepository,
@@ -78,6 +79,8 @@ describe("RedirectUseCase", () => {
             });
 
             it("should return the long URL and track analytics", async () => {
+                mockCacheService.getCache.mockResolvedValueOnce(mockUrl);
+
                 const expectedAnalytics = {
                     urlId: mockUrl._id,
                     userId: mockUrl.userId,
@@ -89,18 +92,18 @@ describe("RedirectUseCase", () => {
                     country: mockGeoLocation.country,
                     timestamp: expect.any(Date)
                 };
+                mockCacheService.getCache.mockResolvedValue(expectedAnalytics);
 
                 const result = await redirectUseCase.exec(ALIAS, mockRequest);
 
                 expect(result).toBe(mockUrl.longUrl);
-                expect(mockUrlRepository.findByShortUrl).toHaveBeenCalledWith(FULL_URL);
                 expect(mockClickAnalyticsRepository.create).toHaveBeenCalledWith(
                     expect.objectContaining(expectedAnalytics)
                 );
                 expect(mockUrlRepository.incrementClicks).toHaveBeenCalledWith(mockUrl._id);
-                expect(mockCacheService.invalidateUrlCache).toHaveBeenCalledWith(mockUrl.shortUrl);
-                expect(mockCacheService.cacheUrl).toHaveBeenCalledWith({ ...mockUrl, clicks: mockUrl.clicks! + 1 });
-                expect(mockCacheService.getCachedUrl).toHaveBeenCalledWith(FULL_URL);
+                expect(mockCacheService.deleteCache).toHaveBeenCalledWith(CachePrefixes.UrlCache, mockUrl.shortUrl);
+                expect(mockCacheService.setCache).toHaveBeenCalledWith(CachePrefixes.UrlCache, mockUrl.shortUrl, { ...mockUrl, clicks: mockUrl.clicks! + 1 });
+                expect(mockCacheService.getCache).toHaveBeenCalledWith(CachePrefixes.UrlCache, FULL_URL);
             });
             it("should detect mobile devices correctly", async () => {
                 mockRequest.get.mockImplementation((header: string) => {
@@ -125,13 +128,14 @@ describe("RedirectUseCase", () => {
         describe("error handling", () => {
             it("should throw NotFoundError for non-existent URLs", async () => {
                 mockUrlRepository.findByShortUrl.mockResolvedValue(null);
+                mockCacheService.getCache.mockResolvedValue(null)
 
                 await expect(redirectUseCase.exec(ALIAS, mockRequest))
                     .rejects.toThrow(new NotFoundError("URL not found"));
 
                 expect(mockClickAnalyticsRepository.create).not.toHaveBeenCalled();
                 expect(mockUrlRepository.update).not.toHaveBeenCalled();
-                expect(mockCacheService.getCachedUrl).toHaveBeenCalledWith(FULL_URL);
+                expect(mockCacheService.getCache).toHaveBeenCalledWith(CachePrefixes.UrlCache, FULL_URL);
             });
         });
     });

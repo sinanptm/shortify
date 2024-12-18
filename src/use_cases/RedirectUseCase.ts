@@ -25,7 +25,7 @@ export default class RedirectUseCase {
         ]);
 
         await this.cacheService.deleteCache(CachePrefixes.UrlCache, url.shortUrl!);
-        await this.cacheService.setCache(CachePrefixes.UrlCache, url.shortUrl!, url);
+        await this.cacheService.setCache(CachePrefixes.UrlCache, url.shortUrl!, updatedUrl);
 
         return url.longUrl!;
     }
