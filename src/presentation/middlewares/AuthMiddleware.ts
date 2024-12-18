@@ -12,7 +12,7 @@ export default class AuthMiddleware {
          const token = req.cookies.auth_token;
 
          if (!token) {
-            res.status(StatusCode.Unauthorized).json({ message: "Unauthorized: No Token Pr" });
+            res.status(StatusCode.Unauthorized).json({ message: "Unauthorized: No Token Provided 🤷‍♀️" });
             return;
          }
          const { email, id } = this.tokenService.verifyToken(req.cookies.auth_token);
