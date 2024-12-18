@@ -5,191 +5,196 @@
 [![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg)](https://expressjs.com/)
 [![Redis](https://img.shields.io/badge/Redis-4.x-red.svg)](https://redis.io/)
 [![Jest](https://img.shields.io/badge/Jest-29.x-orange.svg)](https://jestjs.io/)
+[![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
 
 ## 📋 Table of Contents
+
 - [Overview](#overview)
 - [Features](#features)
+- [Authentication](#authentication)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
 - [Getting Started](#getting-started)
-- [Testing](#testing)
+- [Deployment](#deployment)
 - [Environment Variables](#environment-variables)
+- [API Documentation](#api-documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 🎯 Overview
+## 🔐 Authentication
 
-Shortify is a scalable URL shortener API that provides advanced analytics, Google Sign-In authentication, and rate limiting. The system allows users to create and manage shortened URLs with detailed tracking and analytics capabilities.
+Shortify implements a flexible authentication system using Passport.js with Google OAuth 2.0:
 
-🌐 **Live Demo**: [https://shortify.avm-ayurvedic.online](https://shortify.avm-ayurvedic.online/api/auth/google)  
-📚 **API Documentation**: [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx#bd9ed592-d807-4be9-b519-83a94ff1bac6)
+### Authentication Flow
 
-## ✨ Features
+1. **Browser-side Authentication**:
+   - User initiates Google login from the client application
+   - Client redirects to `/api/auth/google`
+   - Google OAuth consent screen is displayed
+   - User authenticates with Google
 
-### 🔐 Authentication
-- Google Sign-In integration
-- Secure JWT-based session management
+2. **Server Processing**:
+   ```mermaid
+   sequenceDiagram
+      Client->>Server: Initiate Google OAuth
+      Server->>Google: Redirect to consent
+      Google->>Server: Return user data
+      Server->>Client: Set HTTP-only cookie & return JWT
+   ```
 
-### 🔗 URL Management
-- Create shortened URLs with optional custom aliases
-- Topic-based URL grouping (acquisition, activation, retention)
-- Custom alias support
-- Rate limiting protection
+3. **Token Handling**:
+   - Server sets HTTP-only cookie with JWT
+   - Server also returns JWT in response body
+   - Client can:
+     - Rely on cookie-based auth (automatic)
+     - Use JWT as Bearer token in Authorization header
 
-### 📊 Analytics
-- Comprehensive click tracking
-- Device and OS analytics
-- Unique visitor tracking
-- Time-based analytics
-- Topic-based performance metrics
+### Token Usage
 
-### ⚡ Performance
-- Redis caching implementation
-- Rate limiting
-- Scalable architecture
+```javascript
+// Cookie-based auth (automatic)
+fetch('/api/urls', {
+  credentials: 'include' // Sends cookies automatically
+});
+
+// Bearer token auth
+fetch('/api/urls', {
+  headers: {
+    'Authorization': `Bearer ${jwt}`
+  }
+});
+```
 
 ## 🛠 Tech Stack
 
-- **Backend Framework**: Node.js with Express
-- **Language**: TypeScript
+### Core Technologies
+- **Runtime**: Node.js 18.x
+- **Language**: TypeScript 4.0
+- **Framework**: Express 4.x
 - **Database**: MongoDB with Mongoose
-- **Caching**: Redis
-- **Testing**: Jest
-- **Authentication**: Google OAuth + JWT
-- **Package Manager**: Yarn
+- **Caching**: Redis 4.x
+
+### Security & Authentication
+- **Auth Framework**: Passport.js
+- **Strategy**: Google OAuth 2.0
+- **Token Management**: JWT
 - **Rate Limiting**: rate-limiter-flexible
+
+### DevOps & Monitoring
+- **Process Manager**: PM2
 - **Logging**: Winston
-
-## 🌐 Deployment
-
-The application is deployed on AWS with the following setup:
-- Nginx as a reverse proxy for handling requests
-- SSL/HTTPS configuration through Nginx
-- Subdomain configuration: `shortify.avm-ayurvedic.online`
-- PM2 for process management
-
-## 🔐 Authentication Implementation
-
-Authentication is implemented using Passport.js with Google OAuth 2.0 strategy:
-- Passport.js for handling authentication flow
-- Google OAuth 2.0 for secure user authentication
-- JWT tokens for session management
-- Secure cookie handling for token storage
-
-Example authentication flow:
-1. User initiates Google login
-2. Passport.js handles OAuth flow
-3. User information is received from Google
-4. JWT tokens are generated and stored
-5. Secure session is established
-
-
-## 📁 Project Structure
-
-```
-├── .github/                  # GitHub workflows and configurations
-├── logs/                     # Application logs
-├── src/
-│   ├── config/              # Configuration files
-│   ├── domain/              # Domain entities and interfaces
-│   ├── infrastructure/      # External services implementation
-│   ├── presentation/        # Controllers and routes
-│   ├── types/              # TypeScript type definitions
-│   ├── use_cases/          # Application business logic
-│   ├── utils/              # Utility functions
-│   └── index.ts            # Application entry point
-├── tests/                   # Test files
-├── .env                     # Environment variables
-├── jest.config.js          # Jest configuration
-├── nodemon.json            # Nodemon configuration
-├── tsconfig.json           # TypeScript configuration
-└── package.json            # Project dependencies and scripts
-```
+- **Reverse Proxy**: Nginx
+- **Cloud Platform**: AWS
+- **Package Manager**: Yarn
 
 ## 🚀 Getting Started
 
 1. **Clone the repository**
-```bash
-git clone https://github.com/sinanptm/shortify
-cd shortify
-```
+   ```bash
+   git clone https://github.com/yourusername/shortify.git
+   cd shortify
+   ```
 
 2. **Install dependencies**
-```bash
-yarn install
-```
+   ```bash
+   yarn install
+   ```
 
 3. **Set up environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configurations
+   ```
 
 4. **Start development server**
-```bash
-yarn dev
-```
+   ```bash
+   yarn dev
+   ```
 
-5. **Build for production**
-```bash
-yarn build
-yarn start
-```
+## 🌐 Deployment
 
-## 🧪 Testing
+### AWS Infrastructure
 
-Run tests using Jest:
+The application is deployed on AWS with the following setup:
+- EC2 instance for application hosting
+- Route 53 for DNS management
+- CloudFront for CDN (optional)
+- ACM for SSL certificate management
 
-```bash
-# Run all tests
-yarn test
+### Nginx Configuration
 
-# Run tests with coverage
-yarn test --coverage
+```nginx
+server {
+    listen 80;
+    server_name shortify.avm-ayurvedic.online;
+    
+    # Redirect HTTP to HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name shortify.avm-ayurvedic.online;
+
+    # SSL configuration
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+    
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 ```
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
-
 ```env
-# General Environment
-NODE_ENV=DEV
+# Server Configuration
+PORT=8000
+NODE_ENV=production
 
 # Database
-MONGO_URI=mongodb://localhost:27017/Shortify
+MONGODB_URI=mongodb://localhost:27017/shortify
+REDIS_URL=redis://localhost:6379
 
-# Client and Server URLs
-CLIENT_URL=http://localhost:3000
-SERVER_URL=http://localhost:8000
-
-# Port Configuration
-PORT=8000
-
-# Redis Configuration
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-
-# JWT Secrets
-TOKEN_SECRET=your_TOKEN_SECRET
-
-# Geolocation Provider
-GEOLOCATION_PROVIDER=http://ip-api.com/json/
-
-# Google OAuth
+# Authentication
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callback
+JWT_SECRET=your_jwt_secret
+COOKIE_SECRET=your_cookie_secret
 
+# AWS Configuration
+AWS_REGION=your_aws_region
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+
+# Rate Limiting
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging
+LOG_LEVEL=info
 ```
 
-## 📦 Available Scripts
+## 📚 API Documentation
 
-```bash
-yarn dev        # Start development server
-yarn build      # Build the project
-yarn start      # Start production server
-yarn test       # Run tests
-yarn clean      # Clean build directory
-```
+[API documentation section would go here]
 
+## 🤝 Contributing
 
-Built with ❤️  using Clean Architecture and Domain-Driven Design principles
+[Contributing guidelines would go here]
+
+## 📄 License
+
+[License information would go here]
