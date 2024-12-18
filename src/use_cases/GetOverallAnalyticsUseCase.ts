@@ -34,8 +34,8 @@ export default class GetOverallAnalyticsUseCase {
             totalClicks: clickAnalytics.length,
             uniqueClicks: new Set(clickAnalytics.map(click => click.ipAddress)).size,
             clicksByDate: aggregateClicksByDate(clickAnalytics),
-            osType: this.aggregateOsAnalytics(clickAnalytics),
-            deviceType: this.aggregateDeviceAnalytics(clickAnalytics)
+            osType: this.getOsTypeAnalytics(clickAnalytics),
+            deviceType: this.getDeviceAnalytics(clickAnalytics)
         };
 
         await this.cacheService.setCache(CachePrefixes.OverallAnalytics,userId, overallAnalytics, CacheDuration.ThirtySeconds);
@@ -50,7 +50,7 @@ export default class GetOverallAnalyticsUseCase {
         return user;
     }
 
-    private aggregateOsAnalytics(clickAnalytics: IClickAnalytics[]) {
+    private getOsTypeAnalytics(clickAnalytics: IClickAnalytics[]) {
         const osAnalytics: { [key: string]: { uniqueClicks: Set<string>, totalClicks: number; }; } = {};
 
         clickAnalytics.forEach(click => {
@@ -74,7 +74,7 @@ export default class GetOverallAnalyticsUseCase {
         }));
     }
 
-    private aggregateDeviceAnalytics(clickAnalytics: IClickAnalytics[]) {
+    private getDeviceAnalytics(clickAnalytics: IClickAnalytics[]) {
         const deviceAnalytics: { [key: string]: { uniqueClicks: Set<string>, totalClicks: number; }; } = {};
 
         clickAnalytics.forEach(click => {

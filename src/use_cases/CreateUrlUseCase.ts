@@ -41,12 +41,12 @@ export default class CreateUrlUseCase {
         if (customAlias) {
             this.validatorService.validateString(customAlias, "customAlias");
 
-            customAlias = this.cleanAlias(customAlias);
+            customAlias = customAlias.trim().replace(/\s+/g, '_');
 
             const existingAlias = await this.urlRepository.findByShortUrl(this.generateUrl(customAlias));
 
             if (existingAlias) {
-                throw new ConflictError("Custom alias already exists. Please choose another.");
+                throw new ConflictError("Custom Alias already exists. Please Choose another.");
             }
             return customAlias;
         }
@@ -57,10 +57,6 @@ export default class CreateUrlUseCase {
 
     private generateUrl(identifier: string): string {
         return `${CLIENT_URL}/l/${identifier}`;
-    }
-
-    private cleanAlias(alias: string): string {
-        return alias.trim().replace(/\s+/g, '_');
     }
 
     private validateInputs(userId: string, longUrl: string, topic: string) {
