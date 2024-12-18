@@ -59,6 +59,30 @@ Shortify is a scalable URL shortener API that provides advanced analytics, Googl
 - **Rate Limiting**: rate-limiter-flexible
 - **Logging**: Winston
 
+## 🌐 Deployment
+
+The application is deployed on AWS with the following setup:
+- Nginx as a reverse proxy for handling requests
+- SSL/HTTPS configuration through Nginx
+- Subdomain configuration: `shortify.avm-ayurvedic.online`
+- PM2 for process management
+
+## 🔐 Authentication Implementation
+
+Authentication is implemented using Passport.js with Google OAuth 2.0 strategy:
+- Passport.js for handling authentication flow
+- Google OAuth 2.0 for secure user authentication
+- JWT tokens for session management
+- Secure cookie handling for token storage
+
+Example authentication flow:
+1. User initiates Google login
+2. Passport.js handles OAuth flow
+3. User information is received from Google
+4. JWT tokens are generated and stored
+5. Secure session is established
+
+
 ## 📁 Project Structure
 
 ```
@@ -145,6 +169,11 @@ PORT=8000
 # Redis connection settings
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
+
+# Google OAuth credentials
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callback
 
 # JWT secrets for access and refresh tokens
 ACCESS_TOKEN_SECRET=youraccesstokensecret
