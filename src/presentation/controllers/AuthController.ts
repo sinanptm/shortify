@@ -1,58 +1,66 @@
-import { AuthorizationError } from "@/domain/entities/CustomErrors";
-import { StatusCode } from "@/types";
-import AuthUseCase from "@/use_cases/auth/AuthUseCase";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from 'express';
+import { StatusCode } from '@/types';
+import AuthUseCase from '@/use_cases/auth/AuthUseCase';
 
-export default class AuthController {
-    constructor(
-        private readonly authUseCase: AuthUseCase
-    ) { }
+export class GoogleAuthController {
+    constructor(private readonly authUseCase: AuthUseCase) {}
 
-    async exec(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { email, name } = req.body;
+    handleGoogleCallback = async (req: Request, res: Response) => {
+        try {            
+            // User is authenticated by Passport.js at this point
+            const user = req.user as {
+                id: string,
+                email: string,
+                name: string;
+            };
 
-            const { accessToken, refreshToken } = await this.authUseCase.exec(email, name);
+            // Generate tokens
+            const { accessToken, refreshToken } = await this.authUseCase.authenticateGoogleUser(user);
 
-            res.cookie("auth_token", refreshToken, {
-                secure: true,
-                sameSite: "strict",
+            // Set refresh token as HTTP-only cookie
+            res.cookie('auth_token', refreshToken, {
                 httpOnly: true,
-                maxAge: 30 * 24 * 60 * 60 * 1000,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
             });
 
-            res.status(StatusCode.Success).json({ token: accessToken, message: "Signin successful" });
+            // Redirect to frontend with access token
+            res.redirect(`${process.env.CLIENT_URL}/oauth-callback?token=${accessToken}`);
         } catch (error) {
-            next(error);
+            console.log(error)
+            res.redirect(`${process.env.CLIENT_URL}/login?error=authentication_failed`);
         }
-    }
+    };
 
-    async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
+    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { auth_token } = req.cookies;
-            if (!auth_token) throw new AuthorizationError();
+            const refreshToken = req.cookies.auth_token;
 
-            const { accessToken } = await this.authUseCase.refreshAccessToken(auth_token);
-            res.status(StatusCode.Success).json({ accessToken });
+            if (!refreshToken) {
+                 res.status(StatusCode.Unauthorized).json({
+                    message: 'No refresh token provided'
+                });
+                return
+            }
 
+            const { accessToken } = await this.authUseCase.refreshAccessToken(refreshToken);
+
+             res.status(StatusCode.Success).json({
+                token: accessToken,
+                message: 'Token refreshed successfully'
+            });
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    async logout(req: Request, res: Response) {
-        const { patientToken } = req.cookies;
-        if (!patientToken) {
-            res.sendStatus(StatusCode.NoContent);
-            return
-        }
+    logout = (req: Request, res: Response) => {
+        // Clear the auth cookie
+        res.clearCookie('auth_token');
 
-        res.clearCookie('auth_token', {
-            httpOnly: true,
-            sameSite: "strict",
-            secure: true,
+        res.status(StatusCode.Success).json({
+            message: 'Logged out successfully'
         });
-
-        res.status(StatusCode.Success).json({ message: "Cookie cleared" });
-    }
+    };
 }

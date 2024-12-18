@@ -1,47 +1,76 @@
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
 import ITokenService from "@/domain/interface/services/ITokenService";
-import IValidatorService from "@/domain/interface/services/IValidatorService";
 import { AuthenticationError } from "@/domain/entities/CustomErrors";
+
+interface GoogleUser {
+    id: string;
+    email: string;
+    name: string;
+}
 
 export default class AuthUseCase {
     constructor(
-        private readonly useRepository: IUserRepository,
-        private readonly validatorService: IValidatorService,
+        private readonly userRepository: IUserRepository,
         private readonly tokenService: ITokenService
-    ) { };
+    ) {}
 
-    async exec(email: string, name: string): Promise<{ accessToken: string; refreshToken: string; }> {
-        this.validatorService.validateRequiredFields({ email, name });
-        this.validatorService.validateEmail(email);
+    async authenticateGoogleUser(googleUser: GoogleUser): Promise<{ 
+        accessToken: string; 
+        refreshToken: string; 
+    }> {
+        // Check if user exists by Google ID
+        console.log(googleUser);
+        let user = await this.userRepository.findByGoogleId(googleUser.id);
 
-        let user = await this.useRepository.findByEmail(email);
+        // If not, create a new user
         if (!user) {
-            
-            user = await this.useRepository.create({ email, name });
+            user = await this.userRepository.create({
+                email: googleUser.email,
+                name: googleUser.name,
+                googleId: googleUser.id
+            });
         }
 
-        const accessToken = this.tokenService.createAccessToken(email, user._id!);
-        const refreshToken = this.tokenService.createRefreshToken(email, user._id!);
+        // Generate tokens
+        const accessToken = this.tokenService.createAccessToken(
+            user.email!, 
+            user._id!
+        );
+        const refreshToken = this.tokenService.createRefreshToken(
+            user.email!, 
+            user._id!
+        );
 
-        await this.useRepository.update(user._id!, {
+        // Update user with new refresh token
+        await this.userRepository.update(user._id!, {
             token: refreshToken
         });
 
         return { accessToken, refreshToken };
     }
 
-    async refreshAccessToken(token: string): Promise<{ accessToken: string; }> {
+    async refreshAccessToken(token: string): Promise<{ accessToken: string }> {
+        // Verify the refresh token
         const { id } = this.tokenService.verifyRefreshToken(token);
 
-        const user = await this.useRepository.findById(id);
+        // Find the user
+        const user = await this.userRepository.findById(id);
 
         if (!user) {
             throw new AuthenticationError();
         }
 
-        const accessToken = this.tokenService.createAccessToken(user.email!, user._id!);
+        // Ensure the provided token matches the stored token
+        if (user.token !== token) {
+            throw new AuthenticationError();
+        }
+
+        // Generate a new access token
+        const accessToken = this.tokenService.createAccessToken(
+            user.email!, 
+            user._id!
+        );
 
         return { accessToken };
     }
-
 }

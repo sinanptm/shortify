@@ -1,6 +1,6 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import ITokenService from "@/domain/interface/services/ITokenService";
-import { CustomRequest, StatusCode } from "@/types";
+import { StatusCode } from "@/types";
 import logger from "@/utils/logger";
 
 export default class AuthMiddleware {
@@ -8,7 +8,7 @@ export default class AuthMiddleware {
       this.exec = this.exec.bind(this);
    }
 
-   exec(req: CustomRequest, res: Response, next: NextFunction) {
+   exec(req: Request, res: Response, next: NextFunction) {
       try {
          const authHeader = req.headers.authorization || req.headers.Authorization;
          const tokenString = Array.isArray(authHeader) ? authHeader[0] : authHeader;

@@ -1,21 +1,40 @@
 import { Router } from 'express';
-import AuthController from '../controllers/AuthController';
+import passport from 'passport';
+import { GoogleAuthController } from '../controllers/AuthController';
 import AuthUseCase from '@/use_cases/auth/AuthUseCase';
 import UserRepository from '@/infrastructure/repositories/UserRepository';
-import ValidatorService from '@/infrastructure/service/ValidatorService';
 import TokenService from '@/infrastructure/service/TokenService';
 
 const route = Router();
 
-const useRepository = new UserRepository();
-const validatorService = new ValidatorService();
+const userRepository = new UserRepository();
 const tokenService = new TokenService();
-const authUseCase = new AuthUseCase(useRepository, validatorService, tokenService);
+const authUseCase = new AuthUseCase(userRepository, tokenService);
 
-const authController = new AuthController(authUseCase);
+const googleAuthController = new GoogleAuthController(authUseCase);
 
-route.post("/auth", authController.exec.bind(authController));
-route.put("/refresh-token",authController.refreshAccessToken.bind(authController));
-route.delete("/logout",authController.logout.bind(authController))
+// Initiate Google OAuth authentication
+route.get(
+    '/auth/google', 
+    passport.authenticate('google', { 
+        scope: ['profile', 'email'] 
+    })
+);
+
+// Google OAuth callback route
+route.get(
+    '/auth/callback',
+    passport.authenticate('google', { 
+        failureRedirect: `${process.env.CLIENT_URL}/login`, 
+        session: false 
+    }),
+    googleAuthController.handleGoogleCallback.bind(googleAuthController)
+);
+
+// Logout route
+route.post('/auth/logout', googleAuthController.logout.bind(googleAuthController));
+
+// Refresh token route
+route.post('/auth/refresh', googleAuthController.refreshToken.bind(googleAuthController));
 
 export default route;
