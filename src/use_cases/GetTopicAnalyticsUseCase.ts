@@ -2,7 +2,7 @@ import IClickAnalytics from "@/domain/entities/IClickAnalytics";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import { IUrlWithClickCount } from "@/domain/entities/IUrl";
-import ICacheService from "@/domain/interface/services/ICacheService";
+import ICacheService, { CachePrefixes } from "@/domain/interface/services/ICacheService";
 import { AggregatedClickData, TopicAnalytics } from "@/types";
 import { NotFoundError } from "@/domain/entities/CustomErrors";
 import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
@@ -15,7 +15,7 @@ export default class GetTopicAnalyticsUseCase {
     ) { }
 
     async exec(topic: string): Promise<TopicAnalytics> {
-        const cachedAnalytics = await this.cacheService.getCachedTopicAnalytics(topic);
+        const cachedAnalytics = await this.cacheService.getCache<TopicAnalytics>(CachePrefixes.TopicAnalytics, topic);
         if (cachedAnalytics) return cachedAnalytics;
 
         const urlsByTopic = await this.urlRepository.findByTopic(topic);
@@ -36,8 +36,7 @@ export default class GetTopicAnalyticsUseCase {
             clicksByDate,
         };
 
-        await this.cacheService.cacheTopicAnalytics(analytics);
-
+        await this.cacheService.setCache(CachePrefixes.TopicAnalytics, analytics.topic, analytics);
         return analytics;
     }
 
@@ -48,8 +47,8 @@ export default class GetTopicAnalyticsUseCase {
 
         const urls = urlsByTopic.map(({ _id, totalClicks: urlTotal, uniqueClicks: urlUnique, shortUrl }) => {
             urlIds.push(_id!);
-            totalClicks+= urlTotal;
-            uniqueClicks +=urlUnique;
+            totalClicks += urlTotal;
+            uniqueClicks += urlUnique;
 
             return {
                 totalClicks: urlTotal,

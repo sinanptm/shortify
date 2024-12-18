@@ -2,7 +2,7 @@ import { AuthorizationError } from "@/domain/entities/CustomErrors";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
-import ICacheService from "@/domain/interface/services/ICacheService";
+import ICacheService, { CacheDuration, CachePrefixes } from "@/domain/interface/services/ICacheService";
 import IUser from "@/domain/entities/IUser";
 import { OverallAnalyticsResponse } from "@/types";
 import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
@@ -19,7 +19,7 @@ export default class GetOverallAnalyticsUseCase {
     async exec(userId: string): Promise<OverallAnalyticsResponse> {
         const user = await this.validateUser(userId);
 
-        const cachedAnalytics = await this.cacheService.getCachedOverallAnalytics(userId);
+        const cachedAnalytics = await this.cacheService.getCache<OverallAnalyticsResponse>(CachePrefixes.OverallAnalytics, userId);
         if (cachedAnalytics) {
             return cachedAnalytics;
         }
@@ -38,7 +38,7 @@ export default class GetOverallAnalyticsUseCase {
             deviceType: this.aggregateDeviceAnalytics(clickAnalytics)
         };
 
-        await this.cacheService.cacheOverallAnalytics(userId, overallAnalytics);
+        await this.cacheService.setCache(CachePrefixes.OverallAnalytics,userId, overallAnalytics, CacheDuration.ThirtySeconds);
 
         return overallAnalytics;
     }
@@ -54,7 +54,7 @@ export default class GetOverallAnalyticsUseCase {
         const osAnalytics: { [key: string]: { uniqueClicks: Set<string>, totalClicks: number; }; } = {};
 
         clickAnalytics.forEach(click => {
-            const osType = click.osType || 'Unknown';
+            const osType = click.osType!;
 
             if (!osAnalytics[osType]) {
                 osAnalytics[osType] = {
@@ -63,7 +63,7 @@ export default class GetOverallAnalyticsUseCase {
                 };
             }
 
-            osAnalytics[osType].uniqueClicks.add(click.ipAddress || '');
+            osAnalytics[osType].uniqueClicks.add(click.ipAddress!);
             osAnalytics[osType].totalClicks++;
         });
 
@@ -78,7 +78,7 @@ export default class GetOverallAnalyticsUseCase {
         const deviceAnalytics: { [key: string]: { uniqueClicks: Set<string>, totalClicks: number; }; } = {};
 
         clickAnalytics.forEach(click => {
-            const deviceType = click.deviceType || 'Unknown';
+            const deviceType = click.deviceType!;
 
             if (!deviceAnalytics[deviceType]) {
                 deviceAnalytics[deviceType] = {
@@ -87,7 +87,7 @@ export default class GetOverallAnalyticsUseCase {
                 };
             }
 
-            deviceAnalytics[deviceType].uniqueClicks.add(click.ipAddress || '');
+            deviceAnalytics[deviceType].uniqueClicks.add(click.ipAddress!);
             deviceAnalytics[deviceType].totalClicks++;
         });
 

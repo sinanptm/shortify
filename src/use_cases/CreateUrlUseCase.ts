@@ -2,7 +2,7 @@ import { CLIENT_URL } from "@/config/env";
 import { AuthenticationError, ConflictError } from "@/domain/entities/CustomErrors";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
 import IUserRepository from "@/domain/interface/repositories/IUserRepository";
-import ICacheService from "@/domain/interface/services/ICacheService";
+import ICacheService, { CacheDuration, CachePrefixes } from "@/domain/interface/services/ICacheService";
 import INanoIdService from "@/domain/interface/services/INanoIdService";
 import IValidatorService from "@/domain/interface/services/IValidatorService";
 
@@ -33,8 +33,7 @@ export default class CreateUrlUseCase {
             customAlias: shortUrl
         });
 
-        await this.cacheService.cacheUrl(url);
-        
+        await this.cacheService.setCache(CachePrefixes.UrlCache, url._id!, url, CacheDuration.TwoHours);
         return url;
     }
 

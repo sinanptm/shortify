@@ -1,9 +1,10 @@
 import { CLIENT_URL } from "@/config/env";
 import { NotFoundError } from "@/domain/entities/CustomErrors";
 import IClickAnalytics from "@/domain/entities/IClickAnalytics";
+import IUrl from "@/domain/entities/IUrl";
 import IClickAnalyticsRepository from "@/domain/interface/repositories/IClickAnalyticsRepository";
 import IUrlRepository from "@/domain/interface/repositories/IUrlRepository";
-import ICacheService from "@/domain/interface/services/ICacheService";
+import ICacheService, { CachePrefixes } from "@/domain/interface/services/ICacheService";
 import { AggregatedClickData } from "@/types";
 import aggregateClicksByDate from "@/utils/aggregateClicksByDate";
 
@@ -39,7 +40,7 @@ export default class GetUrlAnalyticsUseCase {
 
   private async getUrl(alias: string) {
     const fullUrl = `${CLIENT_URL}/l/${alias}`;
-    let url = await this.cacheService.getCachedUrl(fullUrl);
+    let url = await this.cacheService.getCache<IUrl>(CachePrefixes.UrlCache, fullUrl);
 
     if (!url) {
       url = await this.urlRepository.findByCustomAlias(alias);
@@ -60,11 +61,11 @@ export default class GetUrlAnalyticsUseCase {
   }
 
   private async findAnalytics(shortUrl: string, urlId: string) {
-    let analytics = await this.cacheService.getCachedUrlAnalytics(shortUrl);
+    let analytics = await this.cacheService.getCache<IClickAnalytics[]>(CachePrefixes.AnalyticsCache, shortUrl);
 
     if (!analytics) {
       analytics = await this.clickAnalyticsRepository.findByUrlId(urlId);
-      await this.cacheService.cacheUrlAnalytics(shortUrl, analytics);
+      await this.cacheService.setCache(CachePrefixes.AnalyticsCache, shortUrl, analytics);
     }
 
     return analytics;

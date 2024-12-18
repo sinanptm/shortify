@@ -5,7 +5,7 @@ import IGeolocationService, { GeoLocationResponse } from "@/domain/interface/ser
 import { NotFoundError } from "@/domain/entities/CustomErrors";
 import IUrl from '@/domain/entities/IUrl';
 import IClickAnalytics from '@/domain/entities/IClickAnalytics';
-import ICacheService from '@/domain/interface/services/ICacheService';
+import ICacheService, { CacheDuration, CachePrefixes } from '@/domain/interface/services/ICacheService';
 import { CLIENT_URL } from '@/config/env';
 
 export default class RedirectUseCase {
@@ -24,15 +24,15 @@ export default class RedirectUseCase {
             this.clickAnalyticsRepository.create(analyticsData)
         ]);
 
-        await this.cacheService.invalidateUrlCache(url.shortUrl!);
-        await this.cacheService.cacheUrl(updatedUrl!);
+        await this.cacheService.deleteCache(CachePrefixes.UrlCache, url.shortUrl!);
+        await this.cacheService.setCache(CachePrefixes.UrlCache, url.shortUrl!, url);
 
         return url.longUrl!;
     }
 
     private async findUrlByAlias(alias: string): Promise<IUrl> {
         const fullUrl = `${CLIENT_URL}/l/${alias}`;
-        let url = await this.cacheService.getCachedUrl(fullUrl);
+        let url = await this.cacheService.getCache<IUrl>(CachePrefixes.UrlCache, fullUrl);
 
         if (url) return url;
 
@@ -64,13 +64,13 @@ export default class RedirectUseCase {
     }
 
     private async getGeoLocation(ipAddress: string): Promise<GeoLocationResponse | null> {
-        let geoLocation = await this.cacheService.getCachedGeoLocation(ipAddress);
+        let geoLocation = await this.cacheService.getCache<GeoLocationResponse>(CachePrefixes.GeoLocationCache, ipAddress);
 
         if (geoLocation) return geoLocation;
 
         geoLocation = await this.geolocationService.locate(ipAddress);
         if (geoLocation) {
-            await this.cacheService.cacheGeoLocation(geoLocation);
+            await this.cacheService.setCache(CachePrefixes.GeoLocationCache, geoLocation.ip!, geoLocation, CacheDuration.TwoDays);
         }
 
         return geoLocation;
