@@ -1,7 +1,7 @@
 # 🔗 Shortify - URL Shortener API
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.0-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg)](https://expressjs.com/)
 [![Redis](https://img.shields.io/badge/Redis-4.x-red.svg)](https://redis.io/)
 [![Jest](https://img.shields.io/badge/Jest-29.x-orange.svg)](https://jestjs.io/)
@@ -11,18 +11,33 @@
 
 - [Overview](#overview)
 - [Features](#features)
+- [Prerequisites](#prerequisites)
 - [Authentication](#authentication)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
-- [Deployment](#deployment)
 - [Environment Variables](#environment-variables)
 - [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [License](#license)
+
+## 🌐 Live Endpoints
+
+- **Authentication Endpoint**: [https://shortify.avm-ayurvedic.online/api/auth/google](https://shortify.avm-ayurvedic.online/api/auth/google)
+- **API Documentation**: [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx)
+
+## Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+- Node.js 22.x or higher
+- Redis Server (Install from [Redis Official Documentation](https://redis.io/docs/getting-started/))
+- MongoDB
+- Yarn package manager
 
 ## 🔐 Authentication
 
-Shortify implements a flexible authentication system using Passport.js with Google OAuth 2.0:
+Shortify uses Passport.js with Google OAuth 2.0. Authentication is handled through:
+- Browser-based Google OAuth flow (`/api/auth/google`)
+- JWT tokens returned in both cookie and response body
+- Support for both cookie-based and bearer token authentication
 
 ### Authentication Flow
 
@@ -41,33 +56,25 @@ Shortify implements a flexible authentication system using Passport.js with Goog
       Server->>Client: Set HTTP-only cookie & return JWT
    ```
 
-3. **Token Handling**:
-   - Server sets HTTP-only cookie with JWT
-   - Server also returns JWT in response body
-   - Client can:
-     - Rely on cookie-based auth (automatic)
-     - Use JWT as Bearer token in Authorization header
+3. **Token Usage**:
+   ```javascript
+   // Cookie-based auth (automatic)
+   fetch('/api/urls', {
+     credentials: 'include' // Sends cookies automatically
+   });
 
-### Token Usage
-
-```javascript
-// Cookie-based auth (automatic)
-fetch('/api/urls', {
-  credentials: 'include' // Sends cookies automatically
-});
-
-// Bearer token auth
-fetch('/api/urls', {
-  headers: {
-    'Authorization': `Bearer ${jwt}`
-  }
-});
-```
+   // Bearer token auth
+   fetch('/api/urls', {
+     headers: {
+       'Authorization': `Bearer ${jwt}`
+     }
+   });
+   ```
 
 ## 🛠 Tech Stack
 
 ### Core Technologies
-- **Runtime**: Node.js 18.x
+- **Runtime**: Node.js 22.x
 - **Language**: TypeScript 4.0
 - **Framework**: Express 4.x
 - **Database**: MongoDB with Mongoose
@@ -79,82 +86,29 @@ fetch('/api/urls', {
 - **Token Management**: JWT
 - **Rate Limiting**: rate-limiter-flexible
 
-### DevOps & Monitoring
-- **Process Manager**: PM2
-- **Logging**: Winston
-- **Reverse Proxy**: Nginx
-- **Cloud Platform**: AWS
-- **Package Manager**: Yarn
-
 ## 🚀 Getting Started
 
-1. **Clone the repository**
+1. **Clone and Install**
    ```bash
    git clone https://github.com/yourusername/shortify.git
    cd shortify
-   ```
-
-2. **Install dependencies**
-   ```bash
    yarn install
    ```
 
-3. **Set up environment variables**
+2. **Configure Environment**
    ```bash
    cp .env.example .env
    # Edit .env with your configurations
    ```
 
-4. **Start development server**
+3. **Start Redis**
+   - Follow Redis setup instructions from [Redis Documentation](https://redis.io/docs/getting-started/)
+   - Verify Redis is running: `redis-cli ping`
+
+4. **Start Development Server**
    ```bash
    yarn dev
    ```
-
-## 🌐 Deployment
-
-### AWS Infrastructure
-
-The application is deployed on AWS with the following setup:
-- EC2 instance for application hosting
-- Route 53 for DNS management
-- CloudFront for CDN (optional)
-- ACM for SSL certificate management
-
-### Nginx Configuration
-
-```nginx
-server {
-    listen 80;
-    server_name shortify.avm-ayurvedic.online;
-    
-    # Redirect HTTP to HTTPS
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name shortify.avm-ayurvedic.online;
-
-    # SSL configuration
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-    
-    # Security headers
-    add_header Strict-Transport-Security "max-age=31536000" always;
-    
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
 
 ## ⚙️ Environment Variables
 
@@ -174,11 +128,6 @@ GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callba
 JWT_SECRET=your_jwt_secret
 COOKIE_SECRET=your_cookie_secret
 
-# AWS Configuration
-AWS_REGION=your_aws_region
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-
 # Rate Limiting
 RATE_LIMIT_WINDOW=15
 RATE_LIMIT_MAX_REQUESTS=100
@@ -189,12 +138,4 @@ LOG_LEVEL=info
 
 ## 📚 API Documentation
 
-[API documentation section would go here]
-
-## 🤝 Contributing
-
-[Contributing guidelines would go here]
-
-## 📄 License
-
-[License information would go here]
+For detailed API documentation and endpoints, please visit our [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx).
