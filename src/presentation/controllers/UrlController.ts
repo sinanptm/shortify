@@ -18,7 +18,7 @@ export default class UrlController {
     async createUrl(req: Request, res: Response, next: NextFunction) {
         try {
             const { longUrl, topic, customAlias } = req.body;
-            const userId = req.user?.id;
+            const userId = (req.user as {id:string}).id;
             const url = await this.createUrlUseCase.exec(userId!, longUrl, topic, customAlias);
 
             res.status(StatusCode.Created).json({ message: "Url has created", url });
@@ -62,7 +62,7 @@ export default class UrlController {
 
     async getOverallAnalytics(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.user?.id!;
+            const userId = (req.user as {id:string}).id;
             const analytics = await this.getOverallAnalyticsUseCase.exec(userId);
 
             res.status(StatusCode.Success).json(analytics);

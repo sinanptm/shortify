@@ -152,35 +152,33 @@ yarn test --coverage
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# .env.example
+# General Environment
+NODE_ENV=DEV
 
-# Environment setting (development, production, etc.)
-NODE_ENV=development
+# Database
+MONGO_URI=mongodb://localhost:27017/Shortify
 
-# MongoDB connection URI
-MONGO_URI=mongodb://localhost:27017/yourdbname
-
-# Frontend client URL (used for CORS, etc.)
+# Client and Server URLs
 CLIENT_URL=http://localhost:3000
+SERVER_URL=http://localhost:8000
 
-# Application port
+# Port Configuration
 PORT=8000
 
-# Redis connection settings
+# Redis Configuration
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
-# Google OAuth credentials
+# JWT Secrets
+TOKEN_SECRET=your_TOKEN_SECRET
+
+# Geolocation Provider
+GEOLOCATION_PROVIDER=http://ip-api.com/json/
+
+# Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://shortify.avm-ayurvedic.online/api/auth/google/callback
 
-# JWT secrets for access and refresh tokens
-ACCESS_TOKEN_SECRET=youraccesstokensecret
-REFRESH_TOKEN_SECRET=yourrefreshtokensecret
-
-# Geolocation provider API (default is ip-api)
-GEOLOCATION_PROVIDER=http://ip-api.com/json/
 ```
 
 ## 📦 Available Scripts
