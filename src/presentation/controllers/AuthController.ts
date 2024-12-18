@@ -23,7 +23,14 @@ export class GoogleAuthController {
                 maxAge: 30 * 24 * 60 * 60 * 1000,
             });
 
-            res.status(StatusCode.Success).json({message:"You have authenticated successfully"})
+            res.status(StatusCode.Success).json({
+                message: 'Authentication successful. You can now use the auth_token as a cookie or in the Authorization header as a Bearer token.',
+                token, 
+                auth_token_info: {
+                  cookie_name: 'auth_token',
+                  description: 'Store this token in the Authorization header for API requests as Bearer token.',
+                },
+              });
         } catch (error) {
             next(error);
         }

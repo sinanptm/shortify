@@ -20,7 +20,7 @@
 
 Shortify is a scalable URL shortener API that provides advanced analytics, Google Sign-In authentication, and rate limiting. The system allows users to create and manage shortened URLs with detailed tracking and analytics capabilities.
 
-🌐 **Live Demo**: [https://shortify.avm-ayurvedic.online](https://shortify.avm-ayurvedic.online)  
+🌐 **Live Demo**: [https://shortify.avm-ayurvedic.online](https://shortify.avm-ayurvedic.online/api/auth/google)  
 📚 **API Documentation**: [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx#bd9ed592-d807-4be9-b519-83a94ff1bac6)
 
 ## ✨ Features
