@@ -1,6 +1,7 @@
 import { RedisClientType, createClient } from 'redis';
 import logger from '@/utils/logger';
 import ICacheService, { CacheDuration, CachePrefixes } from '@/domain/interface/services/ICacheService';
+import { REDIS_HOST, REDIS_PORT } from '@/config/env';
 
 
 export class CacheService implements ICacheService {
@@ -9,8 +10,8 @@ export class CacheService implements ICacheService {
     constructor() {
         this.client = createClient({
             socket: {
-                host: '127.0.0.1',
-                port: 6379,
+                host: REDIS_HOST,
+                port: REDIS_PORT as number,
             },
         });
 

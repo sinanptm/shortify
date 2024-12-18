@@ -1,12 +1,13 @@
 import axios from 'axios';
 import IGeolocationService, { GeoLocationResponse } from '@/domain/interface/services/IGeolocationService';
 import logger from '@/utils/logger';
+import { GEOLOCATION_PROVIDER } from '@/config/env';
 
 export default class GeolocationService implements IGeolocationService {
     private apiUrl: string;
 
     constructor() {
-        this.apiUrl = 'http://ip-api.com/json/';
+        this.apiUrl = GEOLOCATION_PROVIDER;
     }
 
     async locate(ipAddress: string): Promise<GeoLocationResponse | null> {
@@ -21,7 +22,7 @@ export default class GeolocationService implements IGeolocationService {
             };
         } catch (error) {
             logger.error('Error fetching geolocation data:', error);
-            return null; 
+            return null;
         }
     }
 }
