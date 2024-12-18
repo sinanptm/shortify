@@ -86,6 +86,12 @@ Shortify uses Passport.js with Google OAuth 2.0. Authentication is handled throu
 - **Token Management**: JWT
 - **Rate Limiting**: rate-limiter-flexible
 
+### DevOps & CI/CD
+- **Continuous Integration**: GitHub Actions
+- **Continuous Deployment**: Automated deployment to AWS
+- **Code Quality**: Automated testing and linting
+- **Branch Protection**: Required status checks
+
 ## 🚀 Getting Started
 
 1. **Clone and Install**
