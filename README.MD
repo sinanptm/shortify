@@ -8,9 +8,18 @@
 [![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
 
 ## 📚 Contents
-[📖 Overview](#overview) | [⚙️ Prerequisites](#prerequisites) | [🔒 Authentication Setup](#authentication-setup) | [🛠 Tech Stack](#tech-stack) | [🚀 Getting Started](#getting-started) | [🔧 Environment Variables](#environment-variables) | [📊 Features](#features) | [📈 API Documentation](#api-documentation)
+[📖 Overview](#-overview) | 
+[⚙️ Prerequisites](#%EF%B8%8F-prerequisites) | 
+[🛠 Tech Stack](#-tech-stack) | 
+[📊 Features](#-features) | 
+[🔌 API Endpoints](#-api-endpoints) | 
+[🔐 Authentication Setup](#-authentication-setup) | 
+[⚙️ Environment Variables](#%EF%B8%8F-environment-variables) | 
+[🚀 Installation](#-installation) | 
+[🧪 Testing](#-testing) | 
+[📚 API Documentation](#-api-documentation)
 
-## 🌟 Overview
+## 📖 Overview
 
 Shortify is a powerful URL shortening service built with scalability and analytics in mind. It provides advanced features including topic-based organization, detailed analytics, and Google Sign-In authentication, making it perfect for both personal and enterprise use.
 
@@ -188,8 +197,6 @@ Run the test suite:
 ```bash
 yarn test
 ```
-
-
 
 ## 📚 API Documentation
 
