@@ -7,37 +7,111 @@
 [![Jest](https://img.shields.io/badge/Jest-29.x-orange.svg)](https://jestjs.io/)
 [![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
 
-## 📚 Contents  
-[📖 Overview](#overview) | [✨ Features](#features) | [⚙️ Prerequisites](#prerequisites) | [🔒 Authentication Setup](#authentication-setup) | [🛠 Tech Stack](#tech-stack) | [🚀 Getting Started](#getting-started)  [🔧 Environment Variables](#environment-variables) | [📄 API Documentation](#api-documentation)  
+## 📚 Contents
+[📖 Overview](#overview) | [⚙️ Prerequisites](#prerequisites) | [🔒 Authentication Setup](#authentication-setup) | [🛠 Tech Stack](#tech-stack) | [🚀 Getting Started](#getting-started) | [🔧 Environment Variables](#environment-variables) | [📊 Features](#features) | [📈 API Documentation](#api-documentation)
 
+## 🌟 Overview
 
+Shortify is a powerful URL shortening service built with scalability and analytics in mind. It provides advanced features including topic-based organization, detailed analytics, and Google Sign-In authentication, making it perfect for both personal and enterprise use.
 
 ## 🌐 Live Endpoints
 
 - **Authentication Endpoint**: [https://shortify.avm-ayurvedic.online/api/auth/google](https://shortify.avm-ayurvedic.online/api/auth/google)
 - **API Documentation**: [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx)
 
-## Prerequisites
+## 🛠 Tech Stack
 
-Before running the application, ensure you have the following installed:
+- **Backend**: Node.js with Express
+- **Database**: MongoDB with Mongoose
+- **Caching**: Redis
+- **Authentication**: Passport.js with Google OAuth 2.0
+- **Testing**: Jest
+- **Containerization**: Docker
+- **Analytics**: Custom implementation with geolocation tracking
+
+## ⚙️ Prerequisites
+
+Before running the application, ensure you have:
 
 - Node.js 22.x or higher
-- Redis Server (Install from [Redis Official Documentation](https://redis.io/docs/getting-started/))
+- Redis Server
 - MongoDB
 - Yarn package manager
-- Google Cloud Console account (for OAuth credentials)
+- Google Cloud Console account
 
-### Security & Authentication
-- **Auth Framework**: Passport.js
-- **Strategy**: Google OAuth 2.0
-- **Token Management**: JWT
-- **Rate Limiting**: rate-limiter-flexible
+## 📊 Features
 
-### DevOps & CI/CD
-- **Continuous Integration**: GitHub Actions
-- **Continuous Deployment**: Automated deployment to AWS
-- **Code Quality**: Automated testing and linting
-- **Branch Protection**: Required status checks
+### 1. User Authentication
+- Google Sign-In integration
+- Secure session management
+- JWT token-based authentication
+- HTTP-only cookie implementation
+
+### 2. URL Shortening
+- Custom alias support
+- Topic-based organization
+- Automatic URL validation
+- Collision detection
+- Rate limiting protection
+
+### 3. Advanced Analytics
+- **Click Tracking**
+  - Total clicks
+  - Unique visitors
+  - Geographic distribution
+  - Time-based analytics
+
+- **Device Analytics**
+  - Operating system tracking
+  - Device type detection
+  - Browser statistics
+  - Screen resolution data
+
+- **Topic-Based Insights**
+  - Category-wise performance
+  - Comparative analytics
+  - Trend analysis
+  - Engagement metrics
+
+### 4. Performance Features
+- Redis caching
+- Load balancing ready
+- Rate limiting
+- Response compression
+
+### 5. Security Measures
+- URL sanitization
+- XSS protection
+- Rate limiting
+- CORS configuration
+- Input validation
+
+## 🔌 API Endpoints
+
+### Authentication
+```javascript
+GET /api/auth/google
+GET /api/auth/callback
+```
+
+### URL Management
+```javascript
+POST /api/shorten
+{
+  "longUrl": "https://example.com",
+  "customAlias": "my-link",
+  "topic": "acquisition"
+}
+
+GET /api/shorten/:alias
+```
+
+### Analytics
+```javascript
+GET /api/analytics/alias/:alias
+GET /api/analytics/topic/:topic
+GET /api/analytics/overall
+```
 
 ## 🔐 Authentication Setup
 
@@ -45,97 +119,47 @@ Before running the application, ensure you have the following installed:
 
 1. **Create Google Cloud Project**:
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select existing one
-   - Enable the Google+ API and Google OAuth API
+   - Create a new project
+   - Enable Google+ API and OAuth API
 
 2. **Configure OAuth Consent Screen**:
-   - Go to "OAuth consent screen"
-   - Set application name, authorized domains
-   - Add necessary scopes (email, profile)
+   - Set application name
+   - Add authorized domains
+   - Configure scopes (email, profile)
 
 3. **Get OAuth Credentials**:
-   - Go to "Credentials" → "Create Credentials" → "OAuth Client ID"
-   - Choose "Web application"
-   - Add authorized origins (e.g., `http://localhost:8000`, `https://your-domain.com`)
-   - Add authorized redirect URIs:
-     ```
-     http://localhost:8000/api/auth/google/callback
-     https://your-domain.com/api/auth/google/callback
-     ```
-   - Save your Client ID and Client Secret
-
-### Authentication Flow
-
-1. **Browser-side Authentication**:
-   - User initiates Google login from the client application
-   - Client redirects to `/api/auth/google`
-   - Google OAuth consent screen is displayed
-   - User authenticates with Google
-
-2. **Server Processing**:
-   ```mermaid
-   sequenceDiagram
-      Client->>Server: Initiate Google OAuth
-      Server->>Google: Redirect to consent
-      Google->>Server: Return user data
-      Server->>Client: Set HTTP-only cookie & return JWT
-   ```
-
-3. **Token Usage**:
-   ```javascript
-   // Cookie-based auth (automatic)
-   fetch('/api/urls', {
-     credentials: 'include' // Sends cookies automatically
-   });
-
-   // Bearer token auth
-   fetch('/api/urls', {
-     headers: {
-       'Authorization': `Bearer ${jwt}`
-     }
-   });
-   ```
-
-[Previous sections remain the same...]
+   - Create OAuth Client ID
+   - Configure redirect URIs
+   - Save Client ID and Secret
 
 ## ⚙️ Environment Variables
 
 ```env
 # Environment Configuration
 NODE_ENV=development
-
-# MongoDB URI
 MONGO_URI=mongodb://localhost:27017/Shortify
-
-# Client URL
 CLIENT_URL=http://localhost:3000
-
-# Server Port
 PORT=8000
 
 # Redis Configuration
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
-# JWT Token Secret
-TOKEN_SECRET=my_super_secret_key
+# Security
+TOKEN_SECRET=your_jwt_secret_key
 
-# Geolocation Provider
+# External Services
 GEOLOCATION_PROVIDER=http://ip-api.com/json/
 
-# Server URL
+# URLs
 SERVER_URL=http://localhost:8000
 
-# Google OAuth Credentials
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
+# Google OAuth
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
 ```
-### Installation Guide
 
-⚠️ **IMPORTANT**: Make sure Redis server is running before starting the application. Without Redis, the URL shortener will not function properly.
-
-## Installation Steps
+## 🚀 Installation
 
 1. Clone the repository:
 ```bash
@@ -153,11 +177,20 @@ yarn install
 cp .env.example .env
 ```
 
-4. Start the development server:
+4. Start development server:
 ```bash
 yarn dev
 ```
 
+## 🧪 Testing
+
+Run the test suite:
+```bash
+yarn test
+```
+
+
+
 ## 📚 API Documentation
 
-For detailed API documentation and endpoints, please visit our [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx).
+For detailed API documentation and examples, visit our [Postman Documentation](https://documenter.getpostman.com/view/32102231/2sAYHzGiKx).
