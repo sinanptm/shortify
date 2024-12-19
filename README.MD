@@ -137,8 +137,32 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 ```
+### Installation Guide
 
-[Rest of the sections remain the same...]
+⚠️ **IMPORTANT**: Make sure Redis server is running before starting the application. Without Redis, the URL shortener will not function properly.
+
+## Installation Steps
+
+1. Clone the repository:
+```bash
+git clone https://github.com/sinanptm/shortify.git
+cd shortify
+```
+
+2. Install dependencies:
+```bash
+yarn install
+```
+
+3. Set up environment:
+```bash
+cp .env.example .env
+```
+
+4. Start the development server:
+```bash
+yarn dev
+```
 
 ## 📚 API Documentation
 
