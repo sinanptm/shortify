@@ -8,7 +8,8 @@
 [![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
 
 ## 📚 Contents  
-[Overview](#overview) | [Features](#features) | [Prerequisites](#prerequisites) | [Authentication Setup](#authentication-setup) | [Tech Stack](#tech-stack) | [Getting Started](#getting-started) | [Environment Variables](#environment-variables) 
+[📖 Overview](#overview) | [✨ Features](#features) | [⚙️ Prerequisites](#prerequisites) | [🔒 Authentication Setup](#authentication-setup) | [🛠 Tech Stack](#tech-stack) | [🚀 Getting Started](#getting-started)  [🔧 Environment Variables](#environment-variables) | [📄 API Documentation](#api-documentation)  
+
 
 
 ## 🌐 Live Endpoints
