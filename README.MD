@@ -7,16 +7,15 @@
 [![Jest](https://img.shields.io/badge/Jest-29.x-orange.svg)](https://jestjs.io/)
 [![Passport](https://img.shields.io/badge/Passport-0.6-green.svg)](https://www.passportjs.org/)
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Authentication Setup](#authentication-setup)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Documentation](#api-documentation)
+# Contents
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Prerequisites](#prerequisites)
+4. [Authentication Setup](#authentication-setup)
+5. [Tech Stack](#tech-stack)
+6. [Getting Started](#getting-started)
+7. [Environment Variables](#environment-variables)
+8. [API Documentation](#api-documentation)
 
 ## 🌐 Live Endpoints
 
