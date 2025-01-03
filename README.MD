@@ -35,7 +35,6 @@ Shortify is a powerful URL shortening service built with scalability and analyti
 - **Caching**: Redis
 - **Authentication**: Passport.js with Google OAuth 2.0
 - **Testing**: Jest
-- **Containerization**: Docker
 - **Analytics**: Custom implementation with geolocation tracking
 
 ## ⚙️ Prerequisites
